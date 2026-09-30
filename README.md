@@ -28,3 +28,17 @@ Interrogator Agent
 Auditor Agent
       ↓
 Finance Dashboard
+
+Technology
+Python
+Streamlit
+LangGraph
+Groq
+Supabase PostgreSQL
+GitHub
+Streamlit Community Cloud
+Project Status
+
+🚧 Under development
+
+This project is being developed as a hackathon/training project.
