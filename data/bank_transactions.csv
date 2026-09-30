@@ -1,0 +1,17 @@
+transaction_date,transaction_id,description,amount,currency,transaction_type,vendor,reference
+2026-08-01,BANK-1001,Office Rent Payment,2500.00,USD,debit,Urban Properties,RENT-AUG
+2026-08-02,BANK-1002,Cloud Hosting Payment,480.00,USD,debit,CloudSphere,CS-2026-0802
+2026-08-03,BANK-1003,Software Subscription,199.00,USD,debit,DataSoft,DS-2026-0803
+2026-08-04,BANK-1004,Client Payment - Alpha Corp,5200.00,USD,credit,Alpha Corp,INV-1001
+2026-08-05,BANK-1005,Client Payment - Beta Ltd,3400.00,USD,credit,Beta Ltd,INV-1002
+2026-08-06,BANK-1006,Office Supplies,375.50,USD,debit,OfficeMart,PO-2001
+2026-08-07,BANK-1007,Internet Service,150.00,USD,debit,NetConnect,NET-AUG
+2026-08-08,BANK-1008,Client Payment - Gamma Inc,2750.00,USD,credit,Gamma Inc,INV-1003
+2026-08-09,BANK-1009,Travel Expense,620.00,USD,debit,TravelWorld,TRV-3001
+2026-08-10,BANK-1010,Equipment Purchase,1850.00,USD,debit,TechEquip,PO-2002
+2026-08-11,BANK-1011,Client Payment - Delta LLC,4100.00,USD,credit,Delta LLC,INV-1004
+2026-08-12,BANK-1012,Office Supplies,220.00,USD,debit,OfficeMart,PO-2003
+2026-08-13,BANK-1013,Marketing Campaign,950.00,USD,debit,MarketPro,MKT-AUG
+2026-08-14,BANK-1014,Client Payment - Epsilon Ltd,2900.00,USD,credit,Epsilon Ltd,INV-1005
+2026-08-15,BANK-1015,Duplicate Software Charge,199.00,USD,debit,DataSoft,DS-2026-0803
+2026-08-16,BANK-1016,Bank Fee,35.00,USD,debit,Global Bank,BANK-FEE-AUG
