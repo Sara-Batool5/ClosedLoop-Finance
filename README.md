@@ -1,2 +1,30 @@
-# ClosedLoop-Finance
-AI-powered autonomous month-end finance closer using LangGraph, Groq, Streamlit and Supabase.
+# CloseLoop
+
+## Autonomous Month-End Closer
+
+CloseLoop is an AI-powered finance operations application designed to assist with the month-end closing process.
+
+The system will use multiple specialized AI agents to:
+
+- Ingest financial data
+- Normalize transactions
+- Reconcile transactions
+- Identify discrepancies
+- Investigate exceptions
+- Perform audit checks
+- Generate an auditable month-end close report
+
+## Planned Workflow
+
+```text
+Financial Data
+      ↓
+Ingestor Agent
+      ↓
+Reconciler Agent
+      ↓
+Interrogator Agent
+      ↓
+Auditor Agent
+      ↓
+Finance Dashboard
