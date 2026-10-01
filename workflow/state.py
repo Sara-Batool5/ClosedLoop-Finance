@@ -11,6 +11,9 @@ class CloseState(TypedDict, total=False):
     period_start: str
     period_end: str
 
+    # Database information
+    close_run_id: int
+
     # Ingestor output
     ingestion_result: dict[str, Any]
 
