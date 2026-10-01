@@ -954,6 +954,315 @@ else:
         )
 
 
+# ============================================================
+# AUDIT TRAIL
+# ============================================================
+
+st.divider()
+
+st.subheader("🧾 Audit Trail")
+
+audit_logs = database_records.get(
+    "audit_logs",
+    [],
+)
+
+if audit_logs:
+
+    for index, log in enumerate(audit_logs, start=1):
+
+        agent_name = log.get(
+            "agent_name",
+            "Unknown Agent",
+        )
+
+        action = log.get(
+            "action",
+            "Unknown Action",
+        )
+
+        result_text = log.get(
+            "result",
+            "",
+        )
+
+        created_at = log.get(
+            "created_at",
+            "",
+        )
+
+        with st.expander(
+            f"{index}. {agent_name} — {action}"
+        ):
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.write(
+                    f"**Agent:** {agent_name}"
+                )
+
+                st.write(
+                    f"**Action:** {action}"
+                )
+
+                st.write(
+                    f"**Entity:** "
+                    f"{log.get('entity_type', '-')}"
+                )
+
+            with col2:
+                st.write(
+                    f"**Entity ID:** "
+                    f"{log.get('entity_id', '-')}"
+                )
+
+                st.write(
+                    f"**Time:** {created_at}"
+                )
+
+            st.write("**Reasoning**")
+
+            st.write(
+                log.get(
+                    "reasoning",
+                    "No reasoning recorded.",
+                )
+            )
+
+            st.write("**Result**")
+
+            st.write(
+                result_text
+                if result_text
+                else "No result recorded."
+            )
+
+else:
+
+    st.info(
+        "No audit trail records are available "
+        "for this close run."
+    )
+
+
+# ============================================================
+# CLOSE RUN DATA
+# ============================================================
+
+st.divider()
+
+st.subheader("🗄️ Close Run Data")
+
+st.caption(
+    "View the records stored in Supabase for this "
+    "month-end close run."
+)
+
+data_tabs = st.tabs(
+    [
+        "Transactions",
+        "Reconciliation",
+        "Investigations",
+        "Audit Logs",
+    ]
+)
+
+
+# ------------------------------------------------------------
+# Transactions
+# ------------------------------------------------------------
+
+with data_tabs[0]:
+
+    transaction_records = database_records.get(
+        "transactions",
+        [],
+    )
+
+    if transaction_records:
+
+        transactions_df = pd.DataFrame(
+            transaction_records
+        )
+
+        transaction_columns = [
+            "id",
+            "source",
+            "transaction_date",
+            "transaction_id",
+            "description",
+            "amount",
+            "currency",
+            "transaction_type",
+            "vendor",
+            "reference",
+            "status",
+        ]
+
+        available_columns = [
+            column
+            for column in transaction_columns
+            if column in transactions_df.columns
+        ]
+
+        st.dataframe(
+            transactions_df[
+                available_columns
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    else:
+
+        st.info(
+            "No transaction records found."
+        )
+
+
+# ------------------------------------------------------------
+# Reconciliation
+# ------------------------------------------------------------
+
+with data_tabs[1]:
+
+    reconciliation_records = database_records.get(
+        "reconciliation_results",
+        [],
+    )
+
+    if reconciliation_records:
+
+        reconciliation_df = pd.DataFrame(
+            reconciliation_records
+        )
+
+        reconciliation_columns = [
+            "id",
+            "transaction_id",
+            "match_status",
+            "matched_transaction_id",
+            "confidence",
+            "discrepancy_amount",
+            "explanation",
+            "created_at",
+        ]
+
+        available_columns = [
+            column
+            for column in reconciliation_columns
+            if column in reconciliation_df.columns
+        ]
+
+        st.dataframe(
+            reconciliation_df[
+                available_columns
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    else:
+
+        st.info(
+            "No reconciliation records found."
+        )
+
+
+# ------------------------------------------------------------
+# Investigations
+# ------------------------------------------------------------
+
+with data_tabs[2]:
+
+    investigation_records = database_records.get(
+        "investigations",
+        [],
+    )
+
+    if investigation_records:
+
+        investigations_df = pd.DataFrame(
+            investigation_records
+        )
+
+        investigation_columns = [
+            "id",
+            "reconciliation_id",
+            "issue_type",
+            "question",
+            "findings",
+            "recommended_action",
+            "action_status",
+            "created_at",
+            "resolved_at",
+        ]
+
+        available_columns = [
+            column
+            for column in investigation_columns
+            if column in investigations_df.columns
+        ]
+
+        st.dataframe(
+            investigations_df[
+                available_columns
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    else:
+
+        st.info(
+            "No investigation records found."
+        )
+
+
+# ------------------------------------------------------------
+# Audit Logs
+# ------------------------------------------------------------
+
+with data_tabs[3]:
+
+    if audit_logs:
+
+        audit_logs_df = pd.DataFrame(
+            audit_logs
+        )
+
+        audit_columns = [
+            "id",
+            "agent_name",
+            "action",
+            "entity_type",
+            "entity_id",
+            "reasoning",
+            "result",
+            "created_at",
+        ]
+
+        available_columns = [
+            column
+            for column in audit_columns
+            if column in audit_logs_df.columns
+        ]
+
+        st.dataframe(
+            audit_logs_df[
+                available_columns
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    else:
+
+        st.info(
+            "No audit log records found."
+        )
+
     # ========================================================
     # WORKFLOW ERROR
     # ========================================================
