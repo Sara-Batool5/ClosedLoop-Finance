@@ -416,68 +416,61 @@ if result:
 
 
     # ========================================================
-    # AGENT WORKFLOW
-    # ========================================================
+# AGENT WORKFLOW
+# ========================================================
 
-    st.markdown(
-        '<div class="section-title">🤖 Agent Workflow</div>',
-        unsafe_allow_html=True,
-    )
+st.markdown(
+    '<div class="section-title">🤖 Agent Workflow</div>',
+    unsafe_allow_html=True,
+)
 
-    agents = [
-        (
-            "1️⃣",
-            "Ingestor",
-            "Data extraction & normalization",
-        ),
-        (
-            "2️⃣",
-            "Reconciler",
-            "Transaction matching",
-        ),
-        (
-            "3️⃣",
-            "Interrogator",
-            "Exception investigation",
-        ),
-        (
-            "4️⃣",
-            "Auditor",
-            "Audit & control verification",
-        ),
-    ]
+agents = [
+    (
+        "1️⃣",
+        "Ingestor",
+        "Data extraction & normalization",
+    ),
+    (
+        "2️⃣",
+        "Reconciler",
+        "Transaction matching",
+    ),
+    (
+        "3️⃣",
+        "Interrogator",
+        "Exception investigation",
+    ),
+    (
+        "4️⃣",
+        "Auditor",
+        "Audit & control verification",
+    ),
+]
 
-    agent_columns = st.columns(4)
+agent_columns = st.columns(4)
 
-    for column, agent in zip(
-        agent_columns,
-        agents,
-    ):
+for column, agent in zip(
+    agent_columns,
+    agents,
+):
 
-        with column:
+    with column:
 
-            st.markdown(
-                f"""
-                <div class="agent-card">
-                    <div class="agent-number">
-                        {agent[0]}
-                    </div>
+        st.markdown(
+            f"### {agent[0]}",
+        )
 
-                    <div class="agent-name">
-                        {agent[1]}
-                    </div>
+        st.markdown(
+            f"**{agent[1]}**"
+        )
 
-                    <div class="agent-status">
-                        {agent[2]}
-                    </div>
+        st.caption(
+            agent[2]
+        )
 
-                    <div class="agent-status">
-                        ✓ Completed
-                    </div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+        st.success(
+            "✓ Completed"
+        )
 
 
     # ========================================================
