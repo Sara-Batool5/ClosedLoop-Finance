@@ -9,9 +9,10 @@ from workflow.graph import run_close
 # ============================================================
 
 st.set_page_config(
-    page_title="CloseLoop — Autonomous Month-End Closer",
+    page_title="CloseLoop | Autonomous Month-End Closer",
     page_icon="💼",
     layout="wide",
+    initial_sidebar_state="expanded",
 )
 
 
@@ -23,53 +24,114 @@ st.markdown(
     """
     <style>
 
-    .main-title {
-        font-size: 2.7rem;
-        font-weight: 800;
-        margin-bottom: 0;
+    /* Main page */
+    .main {
+        padding-top: 1rem;
     }
 
-    .subtitle {
+    /* Header */
+    .hero {
+        padding: 1.5rem 0 1rem 0;
+    }
+
+    .hero-title {
+        font-size: 2.8rem;
+        font-weight: 800;
+        letter-spacing: -1px;
+        margin-bottom: 0.2rem;
+    }
+
+    .hero-subtitle {
         font-size: 1.1rem;
         opacity: 0.75;
-        margin-top: 0;
-        margin-bottom: 1.5rem;
     }
 
-    .agent-card {
-        padding: 1rem;
-        border: 1px solid rgba(128, 128, 128, 0.25);
-        border-radius: 12px;
-        text-align: center;
-        min-height: 145px;
-    }
-
-    .agent-number {
-        font-size: 1.8rem;
-        font-weight: 700;
-    }
-
+    /* Metric cards */
     .metric-card {
-        padding: 1rem;
-        border: 1px solid rgba(128, 128, 128, 0.25);
-        border-radius: 12px;
-        text-align: center;
+        padding: 1.2rem;
+        border-radius: 14px;
+        border: 1px solid rgba(128,128,128,0.25);
+        background: rgba(128,128,128,0.06);
+        min-height: 120px;
+    }
+
+    .metric-label {
+        font-size: 0.85rem;
+        opacity: 0.7;
+        margin-bottom: 0.4rem;
     }
 
     .metric-value {
         font-size: 2rem;
+        font-weight: 750;
+    }
+
+    /* Agent cards */
+    .agent-card {
+        padding: 1rem;
+        border-radius: 14px;
+        border: 1px solid rgba(128,128,128,0.25);
+        background: rgba(128,128,128,0.05);
+        text-align: center;
+        min-height: 150px;
+    }
+
+    .agent-number {
+        font-size: 1.8rem;
+    }
+
+    .agent-name {
+        font-size: 1.05rem;
         font-weight: 700;
+        margin-top: 0.4rem;
     }
 
-    .metric-label {
-        opacity: 0.7;
-        font-size: 0.9rem;
+    .agent-status {
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
     }
 
+    /* Section headings */
     .section-title {
-        font-size: 1.4rem;
-        font-weight: 700;
-        margin-top: 1rem;
+        font-size: 1.45rem;
+        font-weight: 750;
+        margin-top: 1.5rem;
+        margin-bottom: 0.8rem;
+    }
+
+    /* Exception card */
+    .exception-card {
+        padding: 1rem;
+        border-radius: 12px;
+        border: 1px solid rgba(220, 150, 50, 0.45);
+        background: rgba(220, 150, 50, 0.06);
+        margin-bottom: 0.8rem;
+    }
+
+    /* Investigation card */
+    .investigation-card {
+        padding: 1rem;
+        border-radius: 12px;
+        border: 1px solid rgba(128,128,128,0.25);
+        background: rgba(128,128,128,0.05);
+        margin-bottom: 0.8rem;
+    }
+
+    /* Audit card */
+    .audit-card {
+        padding: 1.2rem;
+        border-radius: 14px;
+        border: 1px solid rgba(128,128,128,0.25);
+        background: rgba(128,128,128,0.05);
+    }
+
+    /* Small labels */
+    .small-label {
+        font-size: 0.78rem;
+        font-weight: 600;
+        opacity: 0.65;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
     }
 
     </style>
@@ -94,23 +156,19 @@ if "running" not in st.session_state:
 # ============================================================
 
 st.markdown(
-    '<div class="main-title">CLOSEDLOOP</div>',
+    """
+    <div class="hero">
+        <div class="hero-title">CLOSEDLOOP</div>
+        <div class="hero-subtitle">
+            Autonomous Month-End Closer
+        </div>
+    </div>
+    """,
     unsafe_allow_html=True,
 )
 
-st.markdown(
-    '<div class="subtitle">'
-    "Autonomous Month-End Closer"
-    "</div>",
-    unsafe_allow_html=True,
-)
-
-st.markdown(
-    """
-    CloseLoop uses specialized AI agents to ingest,
-    reconcile, investigate, and audit financial data
-    during the month-end close process.
-    """
+st.caption(
+    "AI-powered reconciliation, investigation, and audit verification."
 )
 
 st.divider()
@@ -131,117 +189,77 @@ with st.sidebar:
 
     period_start = st.date_input(
         "Period Start",
-        value=pd.Timestamp("2026-08-01"),
+        value=pd.to_datetime(
+            "2026-08-01"
+        ).date(),
     )
 
     period_end = st.date_input(
         "Period End",
-        value=pd.Timestamp("2026-08-31"),
+        value=pd.to_datetime(
+            "2026-08-31"
+        ).date(),
     )
 
     st.divider()
 
-    st.subheader("Data Sources")
+    st.subheader("📂 Data Sources")
 
-    st.success("🟢 Bank transactions")
-    st.success("🟢 Accounting transactions")
-    st.success("🟢 Invoice records")
+    st.success("✓ Bank Transactions")
+    st.success("✓ Accounting Transactions")
+    st.success("✓ Invoices")
 
     st.divider()
 
-    st.caption(
-        "CloseLoop MVP uses synthetic financial "
-        "data for demonstration."
+    run_button = st.button(
+        "▶ Run Month-End Close",
+        type="primary",
+        use_container_width=True,
+        disabled=st.session_state.running,
     )
 
 
 # ============================================================
-# RUN CLOSE BUTTON
-# ============================================================
-
-st.header("🚀 Run Month-End Close")
-
-st.write(
-    "Start the autonomous reconciliation and "
-    "audit workflow."
-)
-
-run_button = st.button(
-    "▶️ Run Month-End Close",
-    type="primary",
-    use_container_width=True,
-)
-
-
-# ============================================================
-# WORKFLOW EXECUTION
+# RUN WORKFLOW
 # ============================================================
 
 if run_button:
 
-    if period_start > period_end:
-
-        st.error(
-            "Period start date cannot be after "
-            "the period end date."
-        )
-
-        st.stop()
-
     st.session_state.running = True
 
     progress_placeholder = st.empty()
-    status_placeholder = st.empty()
 
     progress_placeholder.info(
-        "🔄 CloseLoop workflow is starting..."
-    )
-
-    status_placeholder.write(
-        "Initializing agents..."
+        "🚀 CloseLoop is executing the month-end workflow..."
     )
 
     try:
 
-        # ----------------------------------------
-        # Execute LangGraph workflow
-        # ----------------------------------------
-
         result = run_close(
             run_name=run_name,
-            period_start=period_start.isoformat(),
-            period_end=period_end.isoformat(),
+            period_start=str(period_start),
+            period_end=str(period_end),
         )
 
         st.session_state.close_result = result
-        st.session_state.running = False
 
         progress_placeholder.success(
-            "✅ CloseLoop workflow completed."
-        )
-
-        status_placeholder.write(
-            f"Final status: "
-            f"{result.get('status', 'Unknown')}"
+            "✓ Month-end close workflow completed."
         )
 
     except Exception as exc:
 
-        st.session_state.running = False
-
         progress_placeholder.error(
-            "❌ CloseLoop workflow failed."
+            f"Workflow error: {exc}"
         )
 
-        st.error(
-            f"Error: {exc}"
-        )
+    finally:
 
-        st.stop()
+        st.session_state.running = False
 
 
 # ============================================================
-# DISPLAY RESULTS
+# RESULTS
 # ============================================================
 
 result = st.session_state.close_result
@@ -249,15 +267,162 @@ result = st.session_state.close_result
 
 if result:
 
-    st.divider()
+    # --------------------------------------------------------
+    # Extract data
+    # --------------------------------------------------------
+
+    reconciliation_result = result.get(
+        "reconciliation_result",
+        {},
+    )
+
+    reconciliation_summary = (
+        reconciliation_result.get(
+            "summary",
+            {},
+        )
+        if reconciliation_result
+        else {}
+    )
+
+    investigations = result.get(
+        "investigations",
+        [],
+    )
+
+    audit_result = result.get(
+        "audit_result",
+        {},
+    )
+
+    audit_summary = audit_result.get(
+        "audit_summary",
+        {},
+    )
+
+    assessment = audit_result.get(
+        "assessment",
+        {},
+    )
+
+    ingestion_result = result.get(
+        "ingestion_result",
+        {},
+    )
+
+    ingestion_statistics = (
+        ingestion_result.get(
+            "statistics",
+            {},
+        )
+        if ingestion_result
+        else {}
+    )
+
+
+    # ========================================================
+    # CLOSE RUN INFORMATION
+    # ========================================================
+
+    st.markdown(
+        '<div class="section-title">📋 Close Run</div>',
+        unsafe_allow_html=True,
+    )
+
+    info1, info2, info3 = st.columns(3)
+
+    with info1:
+        st.metric(
+            "Close Run ID",
+            result.get(
+                "close_run_id",
+                "—",
+            ),
+        )
+
+    with info2:
+        st.metric(
+            "Current Agent",
+            result.get(
+                "current_agent",
+                "—",
+            ),
+        )
+
+    with info3:
+        st.metric(
+            "Workflow Status",
+            result.get(
+                "status",
+                "—",
+            ),
+        )
+
+
+    # ========================================================
+    # KEY METRICS
+    # ========================================================
+
+    st.markdown(
+        '<div class="section-title">📊 Close Overview</div>',
+        unsafe_allow_html=True,
+    )
+
+    total_transactions = reconciliation_summary.get(
+        "total_comparisons",
+        0,
+    )
+
+    matched_transactions = reconciliation_summary.get(
+        "matched",
+        0,
+    )
+
+    exception_count = reconciliation_summary.get(
+        "total_exceptions",
+        0,
+    )
+
+    human_review_count = audit_summary.get(
+        "human_review_count",
+        0,
+    )
+
+    metric1, metric2, metric3, metric4 = st.columns(4)
+
+    with metric1:
+        st.metric(
+            "Transactions",
+            total_transactions,
+        )
+
+    with metric2:
+        st.metric(
+            "Matched",
+            matched_transactions,
+        )
+
+    with metric3:
+        st.metric(
+            "Exceptions",
+            exception_count,
+        )
+
+    with metric4:
+        st.metric(
+            "Human Review",
+            human_review_count,
+        )
+
 
     # ========================================================
     # AGENT WORKFLOW
     # ========================================================
 
-    st.header("🤖 Agent Workflow")
-
-    agent_columns = st.columns(4)
+    st.markdown(
+        '<div class="section-title">🤖 Agent Workflow</div>',
+        unsafe_allow_html=True,
+    )
 
     agents = [
         (
@@ -282,6 +447,8 @@ if result:
         ),
     ]
 
+    agent_columns = st.columns(4)
+
     for column, agent in zip(
         agent_columns,
         agents,
@@ -295,9 +462,18 @@ if result:
                     <div class="agent-number">
                         {agent[0]}
                     </div>
-                    <h3>{agent[1]}</h3>
-                    <p>{agent[2]}</p>
-                    <strong>✓ Completed</strong>
+
+                    <div class="agent-name">
+                        {agent[1]}
+                    </div>
+
+                    <div class="agent-status">
+                        {agent[2]}
+                    </div>
+
+                    <div class="agent-status">
+                        ✓ Completed
+                    </div>
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -305,132 +481,75 @@ if result:
 
 
     # ========================================================
-    # CLOSE RUN INFORMATION
+    # RECONCILIATION
     # ========================================================
 
-    st.divider()
-
-    st.header("📋 Close Run")
-
-    close_run_id = result.get(
-        "close_run_id"
+    st.markdown(
+        '<div class="section-title">🔄 Reconciliation</div>',
+        unsafe_allow_html=True,
     )
 
-    col1, col2, col3 = st.columns(3)
+    r1, r2, r3, r4, r5 = st.columns(5)
 
-    with col1:
-
-        st.metric(
-            "Close Run ID",
-            close_run_id
-            if close_run_id is not None
-            else "N/A",
-        )
-
-    with col2:
-
-        st.metric(
-            "Current Agent",
-            result.get(
-                "current_agent",
-                "Unknown",
-            ),
-        )
-
-    with col3:
-
-        st.metric(
-            "Workflow Status",
-            result.get(
-                "status",
-                "Unknown",
-            ),
-        )
-
-
-    # ========================================================
-    # RECONCILIATION SUMMARY
-    # ========================================================
-
-    reconciliation = result.get(
-        "reconciliation_result",
-        {},
-    )
-
-    summary = reconciliation.get(
-        "summary",
-        {},
-    )
-
-    st.divider()
-
-    st.header("📊 Reconciliation Summary")
-
-    metric_columns = st.columns(5)
-
-    with metric_columns[0]:
-
-        st.metric(
-            "Transactions",
-            summary.get(
-                "total_comparisons",
-                0,
-            ),
-        )
-
-    with metric_columns[1]:
-
+    with r1:
         st.metric(
             "Matched",
-            summary.get(
+            reconciliation_summary.get(
                 "matched",
                 0,
             ),
         )
 
-    with metric_columns[2]:
-
+    with r2:
         st.metric(
             "Amount Issues",
-            summary.get(
+            reconciliation_summary.get(
                 "amount_discrepancies",
                 0,
             ),
         )
 
-    with metric_columns[3]:
-
+    with r3:
         st.metric(
             "Bank Only",
-            summary.get(
+            reconciliation_summary.get(
                 "bank_only",
                 0,
             ),
         )
 
-    with metric_columns[4]:
-
+    with r4:
         st.metric(
             "Accounting Only",
-            summary.get(
+            reconciliation_summary.get(
                 "accounting_only",
                 0,
             ),
         )
 
+    with r5:
+        st.metric(
+            "Duplicates",
+            reconciliation_summary.get(
+                "duplicates",
+                0,
+            ),
+        )
 
-    # ========================================================
-    # RECONCILIATION DETAILS
-    # ========================================================
 
-    results_df = reconciliation.get(
-        "results"
+    # --------------------------------------------------------
+    # Reconciliation details
+    # --------------------------------------------------------
+
+    reconciliation_details = (
+        reconciliation_result.get(
+            "results"
+        )
+        if reconciliation_result
+        else None
     )
 
-    if (
-        results_df is not None
-        and not results_df.empty
-    ):
+    if reconciliation_details is not None:
 
         st.subheader(
             "Reconciliation Details"
@@ -445,17 +564,16 @@ if result:
             "difference",
             "vendor",
             "reference",
-            "explanation",
         ]
 
         available_columns = [
             column
             for column in display_columns
-            if column in results_df.columns
+            if column in reconciliation_details.columns
         ]
 
         st.dataframe(
-            results_df[
+            reconciliation_details[
                 available_columns
             ],
             use_container_width=True,
@@ -464,29 +582,138 @@ if result:
 
 
     # ========================================================
-    # INVESTIGATIONS
+    # EXCEPTIONS
     # ========================================================
 
-    investigations = result.get(
-        "investigations",
-        [],
+    st.markdown(
+        '<div class="section-title">🚨 Exceptions Requiring Attention</div>',
+        unsafe_allow_html=True,
     )
 
-    st.divider()
-
-    st.header("🔍 Exception Investigations")
-
-    if not investigations:
+    if exception_count == 0:
 
         st.success(
-            "No investigations were required."
+            "✓ No reconciliation exceptions were detected."
         )
 
     else:
 
-        st.warning(
-            f"{len(investigations)} "
-            "exception investigation(s) generated."
+        exception_rows = []
+
+        if reconciliation_details is not None:
+
+            exception_rows = reconciliation_details[
+                ~reconciliation_details[
+                    "match_status"
+                ].isin(
+                    [
+                        "matched",
+                        "matched_by_vendor_amount",
+                    ]
+                )
+            ].to_dict(
+                "records"
+            )
+
+        if exception_rows:
+
+            for index, exception in enumerate(
+                exception_rows,
+                start=1,
+            ):
+
+                status = exception.get(
+                    "match_status",
+                    "unknown",
+                )
+
+                reference = exception.get(
+                    "reference",
+                    "—",
+                )
+
+                vendor = exception.get(
+                    "vendor",
+                    "—",
+                )
+
+                difference = exception.get(
+                    "difference"
+                )
+
+                if (
+                    difference is not None
+                    and pd.notna(difference)
+                ):
+                    difference_text = (
+                        f"${abs(float(difference)):,.2f}"
+                    )
+                else:
+                    difference_text = "—"
+
+                st.markdown(
+                    f"""
+                    <div class="exception-card">
+
+                        <strong>
+                            Exception #{index}
+                        </strong>
+
+                        <br><br>
+
+                        <span class="small-label">
+                            Status
+                        </span>
+
+                        <br>
+                        {status}
+
+                        <br><br>
+
+                        <span class="small-label">
+                            Vendor
+                        </span>
+
+                        <br>
+                        {vendor}
+
+                        <br><br>
+
+                        <span class="small-label">
+                            Reference
+                        </span>
+
+                        <br>
+                        {reference}
+
+                        <br><br>
+
+                        <span class="small-label">
+                            Difference
+                        </span>
+
+                        <br>
+                        {difference_text}
+
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+
+    # ========================================================
+    # AI INVESTIGATIONS
+    # ========================================================
+
+    st.markdown(
+        '<div class="section-title">🔍 AI Exception Investigations</div>',
+        unsafe_allow_html=True,
+    )
+
+    if investigations:
+
+        st.info(
+            f"{len(investigations)} exception investigation(s) generated."
         )
 
         for index, investigation in enumerate(
@@ -494,101 +721,103 @@ if result:
             start=1,
         ):
 
+            issue_type = investigation.get(
+                "issue_type",
+                "Unknown",
+            )
+
+            risk_level = investigation.get(
+                "risk_level",
+                "medium",
+            )
+
+            finding = investigation.get(
+                "finding",
+                "No finding provided.",
+            )
+
+            likely_cause = investigation.get(
+                "likely_cause",
+                "Cause could not be determined.",
+            )
+
+            recommended_action = investigation.get(
+                "recommended_action",
+                "Manual review required.",
+            )
+
+            human_review = investigation.get(
+                "requires_human_review",
+                False,
+            )
+
             with st.expander(
-                f"Investigation #{index} — "
-                f"{investigation.get('issue_type', 'Unknown')}"
+                f"Investigation #{index} — {issue_type}"
             ):
 
-                col1, col2 = st.columns(2)
+                col_a, col_b = st.columns(2)
 
-                with col1:
+                with col_a:
 
-                    st.write("**Finding**")
-
-                    st.write(
-                        investigation.get(
-                            "finding",
-                            "No finding provided.",
-                        )
-                    )
-
-                    st.write("**Likely Cause**")
-
-                    st.write(
-                        investigation.get(
-                            "likely_cause",
-                            "Not determined.",
-                        )
-                    )
-
-                with col2:
-
-                    st.write(
-                        "**Recommended Action**"
+                    st.markdown(
+                        "**Risk Level**"
                     )
 
                     st.write(
-                        investigation.get(
-                            "recommended_action",
-                            "Manual review required.",
-                        )
+                        str(risk_level).upper()
                     )
 
-                    risk_level = investigation.get(
-                        "risk_level",
-                        "medium",
+                with col_b:
+
+                    st.markdown(
+                        "**Human Review**"
                     )
 
-                    if risk_level == "high":
-
-                        st.error(
-                            "🔴 High Risk"
-                        )
-
-                    elif risk_level == "medium":
-
-                        st.warning(
-                            "🟠 Medium Risk"
-                        )
-
-                    else:
-
-                        st.success(
-                            "🟢 Low Risk"
-                        )
-
-                if investigation.get(
-                    "requires_human_review",
-                    False,
-                ):
-
-                    st.info(
-                        "👤 Human review required."
+                    st.write(
+                        "Required"
+                        if human_review
+                        else "Not required"
                     )
+
+                st.markdown(
+                    "**Finding**"
+                )
+
+                st.write(
+                    finding
+                )
+
+                st.markdown(
+                    "**Likely Cause**"
+                )
+
+                st.write(
+                    likely_cause
+                )
+
+                st.markdown(
+                    "**Recommended Action**"
+                )
+
+                st.write(
+                    recommended_action
+                )
+
+    else:
+
+        st.success(
+            "✓ No exception investigations were required."
+        )
 
 
     # ========================================================
-    # AUDIT RESULTS
+    # AUDIT VERIFICATION
     # ========================================================
 
-    audit_result = result.get(
-        "audit_result",
-        {},
+    st.markdown(
+        '<div class="section-title">🛡️ Audit Verification</div>',
+        unsafe_allow_html=True,
     )
-
-    audit_summary = audit_result.get(
-        "audit_summary",
-        {},
-    )
-
-    assessment = audit_result.get(
-        "assessment",
-        {},
-    )
-
-    st.divider()
-
-    st.header("🛡️ Audit Verification")
 
     audit_status = audit_summary.get(
         "audit_status",
@@ -598,18 +827,20 @@ if result:
     if audit_status == "ready_for_review":
 
         st.success(
-            "✅ Audit checks completed successfully."
+            "✓ Audit verification completed. "
+            "Close is ready for review."
         )
 
     else:
 
         st.warning(
-            "⚠️ Exceptions require review."
+            "⚠ Exceptions require review."
         )
 
-    audit_columns = st.columns(4)
 
-    with audit_columns[0]:
+    audit_col1, audit_col2, audit_col3 = st.columns(3)
+
+    with audit_col1:
 
         st.metric(
             "Audit Issues",
@@ -619,17 +850,7 @@ if result:
             ),
         )
 
-    with audit_columns[1]:
-
-        st.metric(
-            "Exceptions",
-            audit_summary.get(
-                "exception_count",
-                0,
-            ),
-        )
-
-    with audit_columns[2]:
+    with audit_col2:
 
         st.metric(
             "High Risk",
@@ -639,7 +860,7 @@ if result:
             ),
         )
 
-    with audit_columns[3]:
+    with audit_col3:
 
         st.metric(
             "Human Review",
@@ -650,9 +871,9 @@ if result:
         )
 
 
-    # ========================================================
-    # AUDITOR ASSESSMENT
-    # ========================================================
+    # --------------------------------------------------------
+    # Auditor assessment
+    # --------------------------------------------------------
 
     st.subheader(
         "Auditor Assessment"
@@ -660,12 +881,13 @@ if result:
 
     overall_assessment = assessment.get(
         "overall_assessment",
-        "No audit assessment available.",
+        "No assessment available.",
     )
 
     st.info(
         overall_assessment
     )
+
 
     key_findings = assessment.get(
         "key_findings",
@@ -674,7 +896,7 @@ if result:
 
     if key_findings:
 
-        st.write(
+        st.markdown(
             "**Key Findings**"
         )
 
@@ -692,7 +914,7 @@ if result:
 
     if control_concerns:
 
-        st.write(
+        st.markdown(
             "**Control Concerns**"
         )
 
@@ -703,21 +925,21 @@ if result:
             )
 
 
-    recommended_steps = assessment.get(
+    recommended_next_steps = assessment.get(
         "recommended_next_steps",
         [],
     )
 
-    if recommended_steps:
+    if recommended_next_steps:
 
-        st.write(
+        st.markdown(
             "**Recommended Next Steps**"
         )
 
-        for step in recommended_steps:
+        for next_step in recommended_next_steps:
 
             st.markdown(
-                f"- {step}"
+                f"- {next_step}"
             )
 
 
@@ -727,7 +949,7 @@ if result:
     ):
 
         st.warning(
-            "👤 Human approval/review is required "
+            "Human approval/review is required "
             "before finalizing this close."
         )
 
@@ -736,57 +958,48 @@ if result:
     # INGESTION STATISTICS
     # ========================================================
 
-    ingestion = result.get(
-        "ingestion_result",
-        {},
+    st.markdown(
+        '<div class="section-title">📥 Ingestion Statistics</div>',
+        unsafe_allow_html=True,
     )
 
-    ingestion_stats = ingestion.get(
-        "statistics",
-        {},
-    )
+    i1, i2, i3, i4 = st.columns(4)
 
-    st.divider()
-
-    st.header("📥 Ingestion Statistics")
-
-    ingestion_columns = st.columns(4)
-
-    with ingestion_columns[0]:
+    with i1:
 
         st.metric(
             "Bank Records",
-            ingestion_stats.get(
+            ingestion_statistics.get(
                 "bank_transaction_count",
                 0,
             ),
         )
 
-    with ingestion_columns[1]:
+    with i2:
 
         st.metric(
             "Accounting Records",
-            ingestion_stats.get(
+            ingestion_statistics.get(
                 "accounting_transaction_count",
                 0,
             ),
         )
 
-    with ingestion_columns[2]:
+    with i3:
 
         st.metric(
             "Invoices",
-            ingestion_stats.get(
+            ingestion_statistics.get(
                 "invoice_count",
                 0,
             ),
         )
 
-    with ingestion_columns[3]:
+    with i4:
 
         st.metric(
             "Total Records",
-            ingestion_stats.get(
+            ingestion_statistics.get(
                 "total_records",
                 0,
             ),
@@ -794,72 +1007,44 @@ if result:
 
 
     # ========================================================
-    # ERROR INFORMATION
+    # WORKFLOW ERROR
     # ========================================================
 
     if result.get("error"):
 
-        st.divider()
-
         st.error(
-            f"Workflow error: "
-            f"{result['error']}"
+            f"Workflow error: {result['error']}"
         )
 
 
 else:
 
     # ========================================================
-    # INITIAL EMPTY STATE
+    # EMPTY STATE
     # ========================================================
 
-    st.info(
-        "👆 Configure the close period in the sidebar "
-        "and click **Run Month-End Close** to start."
+    st.markdown(
+        """
+        <div style="
+            text-align:center;
+            padding:4rem 1rem;
+            opacity:0.75;
+        ">
+
+            <div style="font-size:3rem;">
+                💼
+            </div>
+
+            <h2>
+                Ready to close the books?
+            </h2>
+
+            <p>
+                Configure the close period from the sidebar
+                and start the autonomous month-end workflow.
+            </p>
+
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
-
-    st.divider()
-
-    st.header(
-        "How CloseLoop Works"
-    )
-
-    workflow_columns = st.columns(4)
-
-    workflow_description = [
-        (
-            "1️⃣",
-            "Ingestor",
-            "Loads and normalizes financial data.",
-        ),
-        (
-            "2️⃣",
-            "Reconciler",
-            "Matches transactions and detects discrepancies.",
-        ),
-        (
-            "3️⃣",
-            "Interrogator",
-            "Investigates reconciliation exceptions.",
-        ),
-        (
-            "4️⃣",
-            "Auditor",
-            "Performs final audit and control checks.",
-        ),
-    ]
-
-    for column, item in zip(
-        workflow_columns,
-        workflow_description,
-    ):
-
-        with column:
-
-            st.markdown(
-                f"### {item[0]} {item[1]}"
-            )
-
-            st.caption(
-                item[2]
-            )
