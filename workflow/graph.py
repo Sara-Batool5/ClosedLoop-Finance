@@ -24,26 +24,18 @@ def ingestor_node(
     state: CloseState,
 ) -> CloseState:
     """
-    Execute the Ingestor Agent and save
-    ingested transactions to Supabase.
+    Execute the Ingestor Agent.
     """
 
     try:
         state["current_agent"] = "Ingestor"
-        state["status"] = (
-            "Processing financial data..."
-        )
+        state["status"] = "Processing financial data..."
+        state.pop("error", None)
 
-        # -----------------------------------------
-        # Create Supabase client
-        # -----------------------------------------
-
+        # Connect to Supabase
         supabase = get_supabase_client()
 
-        # -----------------------------------------
-        # Create close run
-        # -----------------------------------------
-
+        # Create a close run
         close_run_id = create_close_run(
             supabase=supabase,
             run_name=state.get(
@@ -62,68 +54,36 @@ def ingestor_node(
 
         state["close_run_id"] = close_run_id
 
-        # -----------------------------------------
         # Run ingestion
-        # -----------------------------------------
-
         ingestion_result = run_ingestor()
 
-        state["ingestion_result"] = (
-            ingestion_result
-        )
-
-        # -----------------------------------------
         # Save bank transactions
-        # -----------------------------------------
-
-        bank_transactions = ingestion_result[
-            "bank"
-        ]
-
         insert_transactions(
             supabase=supabase,
             close_run_id=close_run_id,
-            transactions=bank_transactions,
+            transactions=ingestion_result["bank"],
         )
 
-        # -----------------------------------------
         # Save accounting transactions
-        # -----------------------------------------
-
-        accounting_transactions = (
-            ingestion_result[
-                "accounting"
-            ]
-        )
-
         insert_transactions(
             supabase=supabase,
             close_run_id=close_run_id,
-            transactions=accounting_transactions,
+            transactions=ingestion_result["accounting"],
         )
 
-        # -----------------------------------------
+        # Save ingestion result in workflow state
+        state["ingestion_result"] = ingestion_result
+
         # Audit log
-        # -----------------------------------------
-
-        statistics = ingestion_result[
-            "statistics"
-        ]
-
         insert_audit_log(
             supabase=supabase,
             close_run_id=close_run_id,
             agent_name="Ingestor",
-            action="ingest_financial_data",
+            action="Data ingestion",
+            result="Financial data ingested successfully.",
             reasoning=(
-                "Loaded and normalized bank, "
-                "accounting, and invoice datasets."
-            ),
-            result=(
-                f"Loaded {statistics['bank_transaction_count']} "
-                f"bank transactions and "
-                f"{statistics['accounting_transaction_count']} "
-                f"accounting transactions."
+                "Bank, accounting, and invoice datasets "
+                "were loaded and normalized."
             ),
         )
 
@@ -135,8 +95,12 @@ def ingestor_node(
 
     except Exception as exc:
 
+        error_message = (
+            f"Ingestor error: {type(exc).__name__}: {exc}"
+        )
+
         state["status"] = "Ingestor failed."
-        state["error"] = str(exc)
+        state["error"] = error_message
 
         return state
 
@@ -145,9 +109,17 @@ def reconciler_node(
     state: CloseState,
 ) -> CloseState:
     """
-    Execute the Reconciler Agent and save
-    reconciliation results to Supabase.
+    Execute the Reconciler Agent.
     """
+
+    # Do not continue if ingestion failed.
+    if state.get("error"):
+        state["current_agent"] = "Reconciler"
+        state["status"] = (
+            "Reconciler skipped because ingestion failed."
+        )
+
+        return state
 
     try:
         state["current_agent"] = "Reconciler"
@@ -155,48 +127,48 @@ def reconciler_node(
             "Reconciling financial transactions..."
         )
 
-        ingestion_result = state[
+        ingestion_result = state.get(
             "ingestion_result"
-        ]
+        )
 
+        if not ingestion_result:
+            raise RuntimeError(
+                "Ingestor completed without producing "
+                "ingestion_result."
+            )
+
+        close_run_id = state.get(
+            "close_run_id"
+        )
+
+        if not close_run_id:
+            raise RuntimeError(
+                "Close run ID is missing."
+            )
+
+        # Run reconciliation
         reconciliation_result = run_reconciler(
             bank=ingestion_result["bank"],
-            accounting=ingestion_result[
-                "accounting"
-            ],
+            accounting=ingestion_result["accounting"],
         )
 
         state["reconciliation_result"] = (
             reconciliation_result
         )
 
-        # -----------------------------------------
         # Save reconciliation results
-        # -----------------------------------------
-
         supabase = get_supabase_client()
-
-        close_run_id = state[
-            "close_run_id"
-        ]
-
-        results = reconciliation_result[
-            "results"
-        ]
 
         insert_reconciliation_results(
             supabase=supabase,
             close_run_id=close_run_id,
-            results=results,
+            results=reconciliation_result["results"],
         )
 
-        # -----------------------------------------
-        # Update close run statistics
-        # -----------------------------------------
-
-        summary = reconciliation_result[
-            "summary"
-        ]
+        summary = reconciliation_result.get(
+            "summary",
+            {},
+        )
 
         update_close_run(
             supabase=supabase,
@@ -214,28 +186,22 @@ def reconciler_node(
                     "total_exceptions",
                     0,
                 ),
-                "status": "reconciling",
             },
         )
-
-        # -----------------------------------------
-        # Audit log
-        # -----------------------------------------
 
         insert_audit_log(
             supabase=supabase,
             close_run_id=close_run_id,
             agent_name="Reconciler",
-            action="reconcile_transactions",
-            reasoning=(
-                "Compared bank transactions against "
-                "accounting transactions using "
-                "reference, amount, and vendor."
-            ),
+            action="Transaction reconciliation",
             result=(
                 f"{summary.get('matched', 0)} matched, "
                 f"{summary.get('total_exceptions', 0)} "
-                f"exceptions."
+                "exceptions."
+            ),
+            reasoning=(
+                "Transactions were compared using "
+                "reference, amount, and vendor."
             ),
         )
 
@@ -247,8 +213,12 @@ def reconciler_node(
 
     except Exception as exc:
 
+        error_message = (
+            f"Reconciler error: {type(exc).__name__}: {exc}"
+        )
+
         state["status"] = "Reconciler failed."
-        state["error"] = str(exc)
+        state["error"] = error_message
 
         return state
 
@@ -257,10 +227,12 @@ def should_investigate(
     state: CloseState,
 ) -> str:
     """
-    Decide whether reconciliation exceptions
-    require investigation.
+    Decide where the workflow should go next.
     """
 
+    # If any previous agent failed,
+    # go directly to auditor so the failure
+    # can be recorded.
     if state.get("error"):
         return "auditor"
 
@@ -291,9 +263,11 @@ def interrogator_node(
     state: CloseState,
 ) -> CloseState:
     """
-    Execute the Interrogator Agent and save
-    investigation results.
+    Execute the Interrogator Agent.
     """
+
+    if state.get("error"):
+        return state
 
     try:
         state["current_agent"] = "Interrogator"
@@ -301,53 +275,48 @@ def interrogator_node(
             "Investigating reconciliation exceptions..."
         )
 
-        reconciliation_result = state[
+        reconciliation_result = state.get(
             "reconciliation_result"
-        ]
+        )
+
+        if not reconciliation_result:
+            raise RuntimeError(
+                "Reconciliation result is missing."
+            )
 
         investigations = run_interrogator(
             reconciliation_result["results"]
         )
 
-        state["investigations"] = (
-            investigations
-        )
+        state["investigations"] = investigations
 
-        # -----------------------------------------
-        # Save investigations
-        # -----------------------------------------
-
-        supabase = get_supabase_client()
-
-        close_run_id = state[
+        close_run_id = state.get(
             "close_run_id"
-        ]
-
-        insert_investigations(
-            supabase=supabase,
-            close_run_id=close_run_id,
-            investigations=investigations,
         )
 
-        # -----------------------------------------
-        # Audit log
-        # -----------------------------------------
+        if close_run_id:
+            supabase = get_supabase_client()
 
-        insert_audit_log(
-            supabase=supabase,
-            close_run_id=close_run_id,
-            agent_name="Interrogator",
-            action="investigate_exceptions",
-            reasoning=(
-                "Investigated reconciliation "
-                "exceptions using the available "
-                "transaction evidence."
-            ),
-            result=(
-                f"Completed {len(investigations)} "
-                "investigation(s)."
-            ),
-        )
+            insert_investigations(
+                supabase=supabase,
+                close_run_id=close_run_id,
+                investigations=investigations,
+            )
+
+            insert_audit_log(
+                supabase=supabase,
+                close_run_id=close_run_id,
+                agent_name="Interrogator",
+                action="Exception investigation",
+                result=(
+                    f"{len(investigations)} "
+                    "exception(s) investigated."
+                ),
+                reasoning=(
+                    "Reconciliation exceptions were "
+                    "reviewed using available evidence."
+                ),
+            )
 
         state["status"] = (
             "Exception investigations completed."
@@ -357,8 +326,13 @@ def interrogator_node(
 
     except Exception as exc:
 
+        error_message = (
+            f"Interrogator error: "
+            f"{type(exc).__name__}: {exc}"
+        )
+
         state["status"] = "Interrogator failed."
-        state["error"] = str(exc)
+        state["error"] = error_message
 
         return state
 
@@ -367,8 +341,7 @@ def auditor_node(
     state: CloseState,
 ) -> CloseState:
     """
-    Execute the Auditor Agent and save
-    the final audit information.
+    Execute the Auditor Agent.
     """
 
     try:
@@ -392,21 +365,56 @@ def auditor_node(
             [],
         )
 
+        # If an earlier agent failed, create
+        # a simple audit record rather than crashing.
+        if state.get("error"):
+
+            audit_result = {
+                "audit_summary": {
+                    "audit_status": "workflow_error",
+                    "issues": [
+                        state["error"]
+                    ],
+                    "issue_count": 1,
+                    "exception_count": 0,
+                    "high_risk_count": 0,
+                    "human_review_count": 1,
+                    "data_sources": [],
+                },
+                "assessment": {
+                    "overall_assessment": (
+                        "The month-end workflow could "
+                        "not be completed because an "
+                        "earlier agent failed."
+                    ),
+                    "key_findings": [
+                        state["error"]
+                    ],
+                    "control_concerns": [
+                        "Workflow execution was interrupted."
+                    ],
+                    "recommended_next_steps": [
+                        "Review the reported agent error "
+                        "and rerun the close."
+                    ],
+                    "human_approval_required": True,
+                },
+            }
+
+            state["audit_result"] = audit_result
+            state["status"] = (
+                "Workflow stopped because of an error."
+            )
+
+            return state
+
         audit_result = run_auditor(
             ingestion_result=ingestion_result,
             reconciliation_result=reconciliation_result,
             investigations=investigations,
         )
 
-        state["audit_result"] = (
-            audit_result
-        )
-
-        # -----------------------------------------
-        # Save audit information
-        # -----------------------------------------
-
-        supabase = get_supabase_client()
+        state["audit_result"] = audit_result
 
         close_run_id = state.get(
             "close_run_id"
@@ -414,73 +422,41 @@ def auditor_node(
 
         if close_run_id:
 
+            supabase = get_supabase_client()
+
             audit_summary = audit_result.get(
                 "audit_summary",
                 {},
-            )
-
-            audit_status = audit_summary.get(
-                "audit_status",
-                "unknown",
-            )
-
-            insert_audit_log(
-                supabase=supabase,
-                close_run_id=close_run_id,
-                agent_name="Auditor",
-                action="perform_audit",
-                reasoning=(
-                    "Reviewed ingestion, "
-                    "reconciliation, and "
-                    "investigation results."
-                ),
-                result=(
-                    f"Audit status: {audit_status}. "
-                    f"Audit issues: "
-                    f"{audit_summary.get('issue_count', 0)}."
-                ),
-            )
-
-            # -------------------------------------
-            # Final close run update
-            # -------------------------------------
-
-            reconciliation_summary = (
-                reconciliation_result.get(
-                    "summary",
-                    {},
-                )
-                if reconciliation_result
-                else {}
             )
 
             update_close_run(
                 supabase=supabase,
                 close_run_id=close_run_id,
                 values={
-                    "status": audit_status,
-                    "total_transactions": (
-                        reconciliation_summary.get(
-                            "total_comparisons",
-                            0,
-                        )
-                    ),
-                    "matched_transactions": (
-                        reconciliation_summary.get(
-                            "matched",
-                            0,
-                        )
-                    ),
-                    "exception_count": (
-                        reconciliation_summary.get(
-                            "total_exceptions",
-                            0,
-                        )
+                    "status": audit_summary.get(
+                        "audit_status",
+                        "completed",
                     ),
                     "completed_at": datetime.now(
                         timezone.utc
                     ).isoformat(),
                 },
+            )
+
+            insert_audit_log(
+                supabase=supabase,
+                close_run_id=close_run_id,
+                agent_name="Auditor",
+                action="Audit verification",
+                result=audit_summary.get(
+                    "audit_status",
+                    "completed",
+                ),
+                reasoning=(
+                    "Final workflow results were "
+                    "reviewed for completeness and "
+                    "control concerns."
+                ),
             )
 
         state["status"] = (
@@ -491,23 +467,22 @@ def auditor_node(
 
     except Exception as exc:
 
+        error_message = (
+            f"Auditor error: {type(exc).__name__}: {exc}"
+        )
+
         state["status"] = "Auditor failed."
-        state["error"] = str(exc)
+        state["error"] = error_message
 
         return state
 
 
 def build_close_graph():
     """
-    Build and compile the CloseLoop
-    LangGraph workflow.
+    Build and compile the CloseLoop LangGraph workflow.
     """
 
     graph = StateGraph(CloseState)
-
-    # -----------------------------------------
-    # Add agent nodes
-    # -----------------------------------------
 
     graph.add_node(
         "ingestor",
@@ -529,27 +504,15 @@ def build_close_graph():
         auditor_node,
     )
 
-    # -----------------------------------------
-    # Start workflow
-    # -----------------------------------------
-
     graph.add_edge(
         START,
         "ingestor",
     )
 
-    # -----------------------------------------
-    # Ingestor → Reconciler
-    # -----------------------------------------
-
     graph.add_edge(
         "ingestor",
         "reconciler",
     )
-
-    # -----------------------------------------
-    # Reconciler → Conditional routing
-    # -----------------------------------------
 
     graph.add_conditional_edges(
         "reconciler",
@@ -560,18 +523,10 @@ def build_close_graph():
         },
     )
 
-    # -----------------------------------------
-    # Interrogator → Auditor
-    # -----------------------------------------
-
     graph.add_edge(
         "interrogator",
         "auditor",
     )
-
-    # -----------------------------------------
-    # Auditor → End
-    # -----------------------------------------
 
     graph.add_edge(
         "auditor",
