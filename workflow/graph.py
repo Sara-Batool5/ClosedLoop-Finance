@@ -477,7 +477,9 @@ def auditor_node(
                             0,
                         )
                     ),
-                    "completed_at": "now()",
+                    "completed_at": datetime.now(
+                        timezone.utc
+                    ).isoformat(),
                 },
             )
 
