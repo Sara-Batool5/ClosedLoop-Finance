@@ -194,16 +194,40 @@ def build_explanation(
 def detect_bank_duplicates(
     bank: pd.DataFrame,
 ) -> pd.DataFrame:
-    """Detect duplicate bank transactions."""
+    """
+    Detect duplicate bank transactions and
+    return the duplicate records.
+    """
 
-    return find_duplicates(bank)
+    duplicates = find_duplicates(
+        bank
+    )
+
+    if duplicates.empty:
+        return duplicates
+
+    # Remove the helper column before
+    # returning data to the application.
+    if "normalized_reference" in duplicates.columns:
+        duplicates = duplicates.drop(
+            columns=["normalized_reference"]
+        )
+
+    return duplicates
 
 
 def generate_reconciliation_summary(
     results: pd.DataFrame,
     duplicates: pd.DataFrame,
 ) -> dict:
-    """Generate summary statistics for reconciliation."""
+    """
+    Generate summary statistics for reconciliation.
+
+    Reconciliation exceptions represent transaction-level
+    mismatches. Duplicate transactions are reported
+    separately as a data-quality issue and are not added
+    again to the exception count.
+    """
 
     if results.empty:
         return {
@@ -214,7 +238,7 @@ def generate_reconciliation_summary(
             "accounting_only": 0,
             "possible_mismatches": 0,
             "duplicates": len(duplicates),
-            "total_exceptions": len(duplicates),
+            "total_exceptions": 0,
         }
 
     matched = int(
@@ -254,12 +278,13 @@ def generate_reconciliation_summary(
         ).sum()
     )
 
+    # Only transaction-level reconciliation
+    # problems count as reconciliation exceptions.
     total_exceptions = (
         amount_discrepancies
         + bank_only
         + accounting_only
         + possible_mismatches
-        + len(duplicates)
     )
 
     return {
