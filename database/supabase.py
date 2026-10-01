@@ -1,6 +1,7 @@
 import os
 from datetime import datetime, timezone
 
+import pandas as pd
 import streamlit as st
 from supabase import Client, create_client
 
@@ -175,7 +176,10 @@ def insert_reconciliation_results(
     results,
 ) -> list[dict]:
     """
-    Insert reconciliation results.
+    Insert reconciliation results into Supabase.
+
+    Converts pandas NaN/inf values to None so that
+    the records are valid JSON.
     """
 
     records = []
@@ -194,10 +198,40 @@ def insert_reconciliation_results(
             "matched_by_vendor_amount",
         }:
             confidence = 100.0
+
         elif match_status == "amount_discrepancy":
             confidence = 90.0
+
         else:
             confidence = 50.0
+
+        # Safely convert discrepancy amount.
+        difference = row.get(
+            "difference"
+        )
+
+        if difference is None:
+            discrepancy_amount = None
+        else:
+            try:
+                difference_float = float(
+                    difference
+                )
+
+                if pd.isna(
+                    difference_float
+                ):
+                    discrepancy_amount = None
+                elif difference_float in (
+                    float("inf"),
+                    float("-inf"),
+                ):
+                    discrepancy_amount = None
+                else:
+                    discrepancy_amount = difference_float
+
+            except (TypeError, ValueError):
+                discrepancy_amount = None
 
         records.append(
             {
@@ -205,10 +239,7 @@ def insert_reconciliation_results(
                 "match_status": match_status,
                 "confidence": confidence,
                 "discrepancy_amount": (
-                    float(row["difference"])
-                    if row.get("difference")
-                    is not None
-                    else None
+                    discrepancy_amount
                 ),
                 "explanation": str(
                     row.get(
