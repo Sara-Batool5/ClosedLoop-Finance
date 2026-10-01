@@ -458,6 +458,62 @@ else:
         )
 
 
+        # --------------------------------------------------------
+    # Duplicate transaction warning
+    # --------------------------------------------------------
+
+    duplicate_count = reconciliation_summary.get(
+        "duplicates",
+        0,
+    )
+
+    duplicates = (
+        reconciliation_result.get(
+            "duplicates"
+        )
+        if reconciliation_result
+        else None
+    )
+
+    if (
+        duplicate_count > 0
+        and duplicates is not None
+        and not duplicates.empty
+    ):
+
+        st.warning(
+            f"⚠ {duplicate_count} duplicate "
+            "transaction record(s) detected."
+        )
+
+        st.caption(
+            "Duplicates are reported separately as "
+            "data-quality issues and are not counted "
+            "again as reconciliation exceptions."
+        )
+
+        duplicate_columns = [
+            "transaction_id",
+            "description",
+            "amount",
+            "vendor",
+            "reference",
+        ]
+
+        available_duplicate_columns = [
+            column
+            for column in duplicate_columns
+            if column in duplicates.columns
+        ]
+
+        st.dataframe(
+            duplicates[
+                available_duplicate_columns
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
     # ========================================================
     # EXCEPTIONS
     # ========================================================
