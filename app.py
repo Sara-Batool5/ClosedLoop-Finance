@@ -17,130 +17,6 @@ st.set_page_config(
 
 
 # ============================================================
-# CUSTOM STYLING
-# ============================================================
-
-st.markdown(
-    """
-    <style>
-
-    /* Main page */
-    .main {
-        padding-top: 1rem;
-    }
-
-    /* Header */
-    .hero {
-        padding: 1.5rem 0 1rem 0;
-    }
-
-    .hero-title {
-        font-size: 2.8rem;
-        font-weight: 800;
-        letter-spacing: -1px;
-        margin-bottom: 0.2rem;
-    }
-
-    .hero-subtitle {
-        font-size: 1.1rem;
-        opacity: 0.75;
-    }
-
-    /* Metric cards */
-    .metric-card {
-        padding: 1.2rem;
-        border-radius: 14px;
-        border: 1px solid rgba(128,128,128,0.25);
-        background: rgba(128,128,128,0.06);
-        min-height: 120px;
-    }
-
-    .metric-label {
-        font-size: 0.85rem;
-        opacity: 0.7;
-        margin-bottom: 0.4rem;
-    }
-
-    .metric-value {
-        font-size: 2rem;
-        font-weight: 750;
-    }
-
-    /* Agent cards */
-    .agent-card {
-        padding: 1rem;
-        border-radius: 14px;
-        border: 1px solid rgba(128,128,128,0.25);
-        background: rgba(128,128,128,0.05);
-        text-align: center;
-        min-height: 150px;
-    }
-
-    .agent-number {
-        font-size: 1.8rem;
-    }
-
-    .agent-name {
-        font-size: 1.05rem;
-        font-weight: 700;
-        margin-top: 0.4rem;
-    }
-
-    .agent-status {
-        font-size: 0.85rem;
-        margin-top: 0.5rem;
-    }
-
-    /* Section headings */
-    .section-title {
-        font-size: 1.45rem;
-        font-weight: 750;
-        margin-top: 1.5rem;
-        margin-bottom: 0.8rem;
-    }
-
-    /* Exception card */
-    .exception-card {
-        padding: 1rem;
-        border-radius: 12px;
-        border: 1px solid rgba(220, 150, 50, 0.45);
-        background: rgba(220, 150, 50, 0.06);
-        margin-bottom: 0.8rem;
-    }
-
-    /* Investigation card */
-    .investigation-card {
-        padding: 1rem;
-        border-radius: 12px;
-        border: 1px solid rgba(128,128,128,0.25);
-        background: rgba(128,128,128,0.05);
-        margin-bottom: 0.8rem;
-    }
-
-    /* Audit card */
-    .audit-card {
-        padding: 1.2rem;
-        border-radius: 14px;
-        border: 1px solid rgba(128,128,128,0.25);
-        background: rgba(128,128,128,0.05);
-    }
-
-    /* Small labels */
-    .small-label {
-        font-size: 0.78rem;
-        font-weight: 600;
-        opacity: 0.65;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-    }
-
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-
-# ============================================================
 # SESSION STATE
 # ============================================================
 
@@ -155,20 +31,15 @@ if "running" not in st.session_state:
 # HEADER
 # ============================================================
 
-st.markdown(
-    """
-    <div class="hero">
-        <div class="hero-title">CLOSEDLOOP</div>
-        <div class="hero-subtitle">
-            Autonomous Month-End Closer
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True,
+st.title("CLOSEDLOOP")
+
+st.subheader(
+    "Autonomous Month-End Closer"
 )
 
 st.caption(
-    "AI-powered reconciliation, investigation, and audit verification."
+    "AI-powered reconciliation, investigation, "
+    "and audit verification."
 )
 
 st.divider()
@@ -227,29 +98,27 @@ if run_button:
 
     st.session_state.running = True
 
-    progress_placeholder = st.empty()
-
-    progress_placeholder.info(
-        "🚀 CloseLoop is executing the month-end workflow..."
-    )
-
     try:
 
-        result = run_close(
-            run_name=run_name,
-            period_start=str(period_start),
-            period_end=str(period_end),
-        )
+        with st.spinner(
+            "CloseLoop is executing the month-end workflow..."
+        ):
+
+            result = run_close(
+                run_name=run_name,
+                period_start=str(period_start),
+                period_end=str(period_end),
+            )
 
         st.session_state.close_result = result
 
-        progress_placeholder.success(
+        st.success(
             "✓ Month-end close workflow completed."
         )
 
     except Exception as exc:
 
-        progress_placeholder.error(
+        st.error(
             f"Workflow error: {exc}"
         )
 
@@ -259,17 +128,36 @@ if run_button:
 
 
 # ============================================================
-# RESULTS
+# GET CURRENT RESULT
 # ============================================================
 
 result = st.session_state.close_result
 
 
-if result:
+# ============================================================
+# EMPTY STATE
+# ============================================================
 
-    # --------------------------------------------------------
-    # Extract data
-    # --------------------------------------------------------
+if not result:
+
+    st.markdown("## 💼 Ready to close the books?")
+
+    st.write(
+        "Configure the close period from the sidebar "
+        "and start the autonomous month-end workflow."
+    )
+
+    st.info(
+        "CloseLoop will ingest financial data, "
+        "reconcile transactions, investigate exceptions, "
+        "and perform audit verification."
+    )
+
+else:
+
+    # ========================================================
+    # EXTRACT RESULTS
+    # ========================================================
 
     reconciliation_result = result.get(
         "reconciliation_result",
@@ -283,6 +171,14 @@ if result:
         )
         if reconciliation_result
         else {}
+    )
+
+    reconciliation_details = (
+        reconciliation_result.get(
+            "results"
+        )
+        if reconciliation_result
+        else None
     )
 
     investigations = result.get(
@@ -321,17 +217,15 @@ if result:
 
 
     # ========================================================
-    # CLOSE RUN INFORMATION
+    # CLOSE RUN
     # ========================================================
 
-    st.markdown(
-        '<div class="section-title">📋 Close Run</div>',
-        unsafe_allow_html=True,
-    )
+    st.header("📋 Close Run")
 
     info1, info2, info3 = st.columns(3)
 
     with info1:
+
         st.metric(
             "Close Run ID",
             result.get(
@@ -341,6 +235,7 @@ if result:
         )
 
     with info2:
+
         st.metric(
             "Current Agent",
             result.get(
@@ -350,6 +245,7 @@ if result:
         )
 
     with info3:
+
         st.metric(
             "Workflow Status",
             result.get(
@@ -360,13 +256,10 @@ if result:
 
 
     # ========================================================
-    # KEY METRICS
+    # CLOSE OVERVIEW
     # ========================================================
 
-    st.markdown(
-        '<div class="section-title">📊 Close Overview</div>',
-        unsafe_allow_html=True,
-    )
+    st.header("📊 Close Overview")
 
     total_transactions = reconciliation_summary.get(
         "total_comparisons",
@@ -391,24 +284,28 @@ if result:
     metric1, metric2, metric3, metric4 = st.columns(4)
 
     with metric1:
+
         st.metric(
             "Transactions",
             total_transactions,
         )
 
     with metric2:
+
         st.metric(
             "Matched",
             matched_transactions,
         )
 
     with metric3:
+
         st.metric(
             "Exceptions",
             exception_count,
         )
 
     with metric4:
+
         st.metric(
             "Human Review",
             human_review_count,
@@ -416,75 +313,66 @@ if result:
 
 
     # ========================================================
-# AGENT WORKFLOW
-# ========================================================
+    # AGENT WORKFLOW
+    # ========================================================
 
-st.markdown(
-    '<div class="section-title">🤖 Agent Workflow</div>',
-    unsafe_allow_html=True,
-)
+    st.header("🤖 Agent Workflow")
 
-agents = [
-    (
-        "1️⃣",
-        "Ingestor",
-        "Data extraction & normalization",
-    ),
-    (
-        "2️⃣",
-        "Reconciler",
-        "Transaction matching",
-    ),
-    (
-        "3️⃣",
-        "Interrogator",
-        "Exception investigation",
-    ),
-    (
-        "4️⃣",
-        "Auditor",
-        "Audit & control verification",
-    ),
-]
+    agents = [
+        (
+            "1️⃣",
+            "Ingestor",
+            "Data extraction & normalization",
+        ),
+        (
+            "2️⃣",
+            "Reconciler",
+            "Transaction matching",
+        ),
+        (
+            "3️⃣",
+            "Interrogator",
+            "Exception investigation",
+        ),
+        (
+            "4️⃣",
+            "Auditor",
+            "Audit & control verification",
+        ),
+    ]
 
-agent_columns = st.columns(4)
+    agent_columns = st.columns(4)
 
-for column, agent in zip(
-    agent_columns,
-    agents,
-):
+    for column, agent in zip(
+        agent_columns,
+        agents,
+    ):
 
-    with column:
+        with column:
 
-        st.markdown(
-            f"### {agent[0]}",
-        )
+            st.subheader(
+                f"{agent[0]} {agent[1]}"
+            )
 
-        st.markdown(
-            f"**{agent[1]}**"
-        )
+            st.caption(
+                agent[2]
+            )
 
-        st.caption(
-            agent[2]
-        )
-
-        st.success(
-            "✓ Completed"
-        )
+            st.success(
+                "✓ Completed"
+            )
 
 
     # ========================================================
     # RECONCILIATION
     # ========================================================
 
-    st.markdown(
-        '<div class="section-title">🔄 Reconciliation</div>',
-        unsafe_allow_html=True,
-    )
+    st.header("🔄 Reconciliation")
 
     r1, r2, r3, r4, r5 = st.columns(5)
 
     with r1:
+
         st.metric(
             "Matched",
             reconciliation_summary.get(
@@ -494,6 +382,7 @@ for column, agent in zip(
         )
 
     with r2:
+
         st.metric(
             "Amount Issues",
             reconciliation_summary.get(
@@ -503,6 +392,7 @@ for column, agent in zip(
         )
 
     with r3:
+
         st.metric(
             "Bank Only",
             reconciliation_summary.get(
@@ -512,6 +402,7 @@ for column, agent in zip(
         )
 
     with r4:
+
         st.metric(
             "Accounting Only",
             reconciliation_summary.get(
@@ -521,6 +412,7 @@ for column, agent in zip(
         )
 
     with r5:
+
         st.metric(
             "Duplicates",
             reconciliation_summary.get(
@@ -530,17 +422,9 @@ for column, agent in zip(
         )
 
 
-    # --------------------------------------------------------
-    # Reconciliation details
-    # --------------------------------------------------------
-
-    reconciliation_details = (
-        reconciliation_result.get(
-            "results"
-        )
-        if reconciliation_result
-        else None
-    )
+    # ========================================================
+    # RECONCILIATION DETAILS
+    # ========================================================
 
     if reconciliation_details is not None:
 
@@ -578,24 +462,16 @@ for column, agent in zip(
     # EXCEPTIONS
     # ========================================================
 
-    st.markdown(
-        '<div class="section-title">🚨 Exceptions Requiring Attention</div>',
-        unsafe_allow_html=True,
+    st.header(
+        "🚨 Exceptions Requiring Attention"
     )
 
-    if exception_count == 0:
+    exception_rows = []
 
-        st.success(
-            "✓ No reconciliation exceptions were detected."
-        )
+    if reconciliation_details is not None:
 
-    else:
-
-        exception_rows = []
-
-        if reconciliation_details is not None:
-
-            exception_rows = reconciliation_details[
+        exception_rows = (
+            reconciliation_details[
                 ~reconciliation_details[
                     "match_status"
                 ].isin(
@@ -604,109 +480,120 @@ for column, agent in zip(
                         "matched_by_vendor_amount",
                     ]
                 )
-            ].to_dict(
-                "records"
+            ]
+            .to_dict("records")
+        )
+
+    if not exception_rows:
+
+        st.success(
+            "✓ No reconciliation exceptions were detected."
+        )
+
+    else:
+
+        st.warning(
+            f"{len(exception_rows)} exception(s) "
+            "require attention."
+        )
+
+        for index, exception in enumerate(
+            exception_rows,
+            start=1,
+        ):
+
+            status = exception.get(
+                "match_status",
+                "unknown",
             )
 
-        if exception_rows:
+            vendor = exception.get(
+                "vendor",
+                "—",
+            )
 
-            for index, exception in enumerate(
-                exception_rows,
-                start=1,
+            reference = exception.get(
+                "reference",
+                "—",
+            )
+
+            difference = exception.get(
+                "difference"
+            )
+
+            if (
+                difference is not None
+                and pd.notna(difference)
             ):
 
-                status = exception.get(
-                    "match_status",
-                    "unknown",
+                difference_text = (
+                    f"${abs(float(difference)):,.2f}"
                 )
 
-                reference = exception.get(
-                    "reference",
-                    "—",
+            else:
+
+                difference_text = "—"
+
+            with st.container(
+                border=True
+            ):
+
+                st.subheader(
+                    f"Exception #{index}"
                 )
 
-                vendor = exception.get(
-                    "vendor",
-                    "—",
-                )
+                c1, c2 = st.columns(2)
 
-                difference = exception.get(
-                    "difference"
-                )
+                with c1:
 
-                if (
-                    difference is not None
-                    and pd.notna(difference)
-                ):
-                    difference_text = (
-                        f"${abs(float(difference)):,.2f}"
+                    st.markdown(
+                        "**Status**"
                     )
-                else:
-                    difference_text = "—"
 
-                st.markdown(
-                    f"""
-                    <div class="exception-card">
+                    st.write(
+                        status
+                    )
 
-                        <strong>
-                            Exception #{index}
-                        </strong>
+                    st.markdown(
+                        "**Vendor**"
+                    )
 
-                        <br><br>
+                    st.write(
+                        vendor
+                    )
 
-                        <span class="small-label">
-                            Status
-                        </span>
+                with c2:
 
-                        <br>
-                        {status}
+                    st.markdown(
+                        "**Reference**"
+                    )
 
-                        <br><br>
+                    st.write(
+                        reference
+                    )
 
-                        <span class="small-label">
-                            Vendor
-                        </span>
+                    st.markdown(
+                        "**Difference**"
+                    )
 
-                        <br>
-                        {vendor}
-
-                        <br><br>
-
-                        <span class="small-label">
-                            Reference
-                        </span>
-
-                        <br>
-                        {reference}
-
-                        <br><br>
-
-                        <span class="small-label">
-                            Difference
-                        </span>
-
-                        <br>
-                        {difference_text}
-
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
+                    st.write(
+                        difference_text
+                    )
 
 
     # ========================================================
     # AI INVESTIGATIONS
     # ========================================================
 
-    st.markdown(
-        '<div class="section-title">🔍 AI Exception Investigations</div>',
-        unsafe_allow_html=True,
+    st.header(
+        "🔍 AI Exception Investigations"
     )
 
     if investigations:
 
         st.info(
-            f"{len(investigations)} exception investigation(s) generated."
+            f"{len(investigations)} exception "
+            "investigation(s) generated."
         )
 
         for index, investigation in enumerate(
@@ -748,29 +635,37 @@ for column, agent in zip(
                 f"Investigation #{index} — {issue_type}"
             ):
 
-                col_a, col_b = st.columns(2)
+                c1, c2 = st.columns(2)
 
-                with col_a:
+                with c1:
 
                     st.markdown(
                         "**Risk Level**"
                     )
 
                     st.write(
-                        str(risk_level).upper()
+                        str(
+                            risk_level
+                        ).upper()
                     )
 
-                with col_b:
+                with c2:
 
                     st.markdown(
                         "**Human Review**"
                     )
 
-                    st.write(
-                        "Required"
-                        if human_review
-                        else "Not required"
-                    )
+                    if human_review:
+
+                        st.warning(
+                            "Required"
+                        )
+
+                    else:
+
+                        st.success(
+                            "Not required"
+                        )
 
                 st.markdown(
                     "**Finding**"
@@ -807,9 +702,8 @@ for column, agent in zip(
     # AUDIT VERIFICATION
     # ========================================================
 
-    st.markdown(
-        '<div class="section-title">🛡️ Audit Verification</div>',
-        unsafe_allow_html=True,
+    st.header(
+        "🛡️ Audit Verification"
     )
 
     audit_status = audit_summary.get(
@@ -824,6 +718,12 @@ for column, agent in zip(
             "Close is ready for review."
         )
 
+    elif audit_status == "workflow_error":
+
+        st.error(
+            "Workflow could not be completed."
+        )
+
     else:
 
         st.warning(
@@ -831,9 +731,9 @@ for column, agent in zip(
         )
 
 
-    audit_col1, audit_col2, audit_col3 = st.columns(3)
+    a1, a2, a3 = st.columns(3)
 
-    with audit_col1:
+    with a1:
 
         st.metric(
             "Audit Issues",
@@ -843,7 +743,7 @@ for column, agent in zip(
             ),
         )
 
-    with audit_col2:
+    with a2:
 
         st.metric(
             "High Risk",
@@ -853,7 +753,7 @@ for column, agent in zip(
             ),
         )
 
-    with audit_col3:
+    with a3:
 
         st.metric(
             "Human Review",
@@ -864,9 +764,9 @@ for column, agent in zip(
         )
 
 
-    # --------------------------------------------------------
-    # Auditor assessment
-    # --------------------------------------------------------
+    # ========================================================
+    # AUDITOR ASSESSMENT
+    # ========================================================
 
     st.subheader(
         "Auditor Assessment"
@@ -951,9 +851,8 @@ for column, agent in zip(
     # INGESTION STATISTICS
     # ========================================================
 
-    st.markdown(
-        '<div class="section-title">📥 Ingestion Statistics</div>',
-        unsafe_allow_html=True,
+    st.header(
+        "📥 Ingestion Statistics"
     )
 
     i1, i2, i3, i4 = st.columns(4)
@@ -1008,36 +907,3 @@ for column, agent in zip(
         st.error(
             f"Workflow error: {result['error']}"
         )
-
-
-else:
-
-    # ========================================================
-    # EMPTY STATE
-    # ========================================================
-
-    st.markdown(
-        """
-        <div style="
-            text-align:center;
-            padding:4rem 1rem;
-            opacity:0.75;
-        ">
-
-            <div style="font-size:3rem;">
-                💼
-            </div>
-
-            <h2>
-                Ready to close the books?
-            </h2>
-
-            <p>
-                Configure the close period from the sidebar
-                and start the autonomous month-end workflow.
-            </p>
-
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
