@@ -559,8 +559,30 @@ def run_close(
 
     graph = build_close_graph()
 
-    final_state = graph.invoke(
-        initial_state
-    )
+    result = graph.invoke(initial_state)
 
-    return final_state
+    close_run_id = result.get("close_run_id")
+
+    if close_run_id:
+        try:
+            result["database_records"] = {
+                "transactions": get_transactions(
+                    close_run_id
+                ),
+                "reconciliation_results": get_reconciliation_results(
+                    close_run_id
+                ),
+                "investigations": get_investigations(
+                    close_run_id
+                ),
+                "audit_logs": get_audit_logs(
+                    close_run_id
+                ),
+            }
+
+        except Exception as exc:
+            result["database_records_error"] = (
+                f"{type(exc).__name__}: {exc}"
+            )
+
+    return result
