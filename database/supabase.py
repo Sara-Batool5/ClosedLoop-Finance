@@ -357,3 +357,75 @@ def insert_audit_log(
         .insert(record)
         .execute()
     )
+
+
+def get_transactions(
+    close_run_id: int,
+) -> list[dict]:
+    """Get transactions for a close run."""
+
+    client = get_supabase_client()
+
+    response = (
+        client.table("transactions")
+        .select("*")
+        .eq("close_run_id", close_run_id)
+        .order("id")
+        .execute()
+    )
+
+    return response.data or []
+
+
+def get_reconciliation_results(
+    close_run_id: int,
+) -> list[dict]:
+    """Get reconciliation results for a close run."""
+
+    client = get_supabase_client()
+
+    response = (
+        client.table("reconciliation_results")
+        .select("*")
+        .eq("close_run_id", close_run_id)
+        .order("id")
+        .execute()
+    )
+
+    return response.data or []
+
+
+def get_investigations(
+    close_run_id: int,
+) -> list[dict]:
+    """Get investigations for a close run."""
+
+    client = get_supabase_client()
+
+    response = (
+        client.table("investigations")
+        .select("*")
+        .eq("close_run_id", close_run_id)
+        .order("id")
+        .execute()
+    )
+
+    return response.data or []
+
+
+def get_audit_logs(
+    close_run_id: int,
+) -> list[dict]:
+    """Get audit logs for a close run."""
+
+    client = get_supabase_client()
+
+    response = (
+        client.table("audit_logs")
+        .select("*")
+        .eq("close_run_id", close_run_id)
+        .order("id")
+        .execute()
+    )
+
+    return response.data or []
