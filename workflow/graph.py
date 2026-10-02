@@ -60,7 +60,9 @@ def ingestor_node(
         state["close_run_id"] = close_run_id
 
         # Run ingestion
-        ingestion_result = run_ingestor()
+        ingestion_result = run_ingestor(
+            uploaded_data=state.get("uploaded_data")
+        )
 
         # Save bank transactions
         insert_transactions(
