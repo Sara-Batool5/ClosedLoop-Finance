@@ -14,6 +14,8 @@ class CloseState(TypedDict, total=False):
     # Database information
     close_run_id: int
 
+    uploaded_data: dict[str, Any]
+    
     # Ingestor output
     ingestion_result: dict[str, Any]
 
