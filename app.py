@@ -263,6 +263,48 @@ if run_button:
                                 "filtered_data"
                             ]["invoices"],
                         }
+                        st.session_state.running = True
+
+                        try:
+                            with st.spinner(
+                                "CloseLoop is executing the month-end workflow..."
+                            ):
+                                result = run_close(
+                                    run_name=run_name,
+                                    period_start=str(period_start),
+                                    period_end=str(period_end),
+                                    uploaded_data={
+                                        "bank": period_validation[
+                                            "filtered_data"
+                                        ]["bank"].to_dict(
+                                            orient="records"
+                                        ),
+                                        "accounting": period_validation[
+                                            "filtered_data"
+                                        ]["accounting"].to_dict(
+                                            orient="records"
+                                        ),
+                                        "invoices": period_validation[
+                                            "filtered_data"
+                                        ]["invoices"].to_dict(
+                                            orient="records"
+                                        ),
+                                    },
+                                )
+
+                            st.session_state.close_result = result
+
+                            st.success(
+                                "✓ Month-end close workflow completed."
+                            )
+
+                        except Exception as exc:
+                            st.error(
+                                f"Workflow error: {exc}"
+                            )
+
+                        finally:
+                            st.session_state.running = False
 
             except Exception as exc:
                 st.error(
