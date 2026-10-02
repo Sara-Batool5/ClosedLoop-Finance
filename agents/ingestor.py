@@ -261,55 +261,55 @@ def run_ingestor(
     invoices, and ingestion statistics.
     """
 
-        if uploaded_data:
-            bank = pd.DataFrame(
-                uploaded_data.get("bank", [])
-            )
+    if uploaded_data:
+        bank = pd.DataFrame(
+            uploaded_data.get("bank", [])
+        )
 
-            accounting = pd.DataFrame(
-                uploaded_data.get("accounting", [])
-            )
+        accounting = pd.DataFrame(
+            uploaded_data.get("accounting", [])
+        )
 
-            invoices = pd.DataFrame(
-                uploaded_data.get("invoices", [])
-            )
+        invoices = pd.DataFrame(
+            uploaded_data.get("invoices", [])
+        )
 
-            validate_columns(
-                bank,
-                REQUIRED_COLUMNS["bank"],
-                "Uploaded bank transactions",
-            )
+        validate_columns(
+            bank,
+            REQUIRED_COLUMNS["bank"],
+            "Uploaded bank transactions",
+        )
 
-            validate_columns(
-                accounting,
-                REQUIRED_COLUMNS["accounting"],
-                "Uploaded accounting transactions",
-            )
+        validate_columns(
+            accounting,
+            REQUIRED_COLUMNS["accounting"],
+            "Uploaded accounting transactions",
+        )
 
-            validate_columns(
-                invoices,
-                REQUIRED_COLUMNS["invoices"],
-                "Uploaded invoices",
-            )
+        validate_columns(
+            invoices,
+            REQUIRED_COLUMNS["invoices"],
+            "Uploaded invoices",
+        )
 
-            bank = normalize_transactions(
-                bank,
-                "bank",
-            )
+        bank = normalize_transactions(
+            bank,
+            "bank",
+        )
 
-            accounting = normalize_transactions(
-                accounting,
-                "accounting",
-            )
+        accounting = normalize_transactions(
+            accounting,
+            "accounting",
+        )
 
-            invoices = normalize_invoices(
-                invoices,
-            )
+        invoices = normalize_invoices(
+            invoices,
+        )
 
-        else:
-            bank = load_bank_transactions()
-            accounting = load_accounting_transactions()
-            invoices = load_invoices()
+    else:
+        bank = load_bank_transactions()
+        accounting = load_accounting_transactions()
+        invoices = load_invoices()
 
     # Basic validation
     bank_invalid_amounts = int(bank["amount"].isna().sum())
