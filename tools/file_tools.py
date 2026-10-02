@@ -110,61 +110,106 @@ def validate_requested_period(
     period_end: str,
 ) -> dict:
     """
-    Check whether the bundled demo data covers the requested period.
+    Check whether financial data exists within the requested period.
+
+    The data does not need to cover every calendar day.
+    At least one record from each required source must exist
+    within the selected period.
     """
 
     requested_start = pd.to_datetime(period_start).date()
     requested_end = pd.to_datetime(period_end).date()
 
-    available_periods = get_available_data_period()
-
-    if not available_periods:
-        return {
-            "valid": False,
-            "message": (
-                "No financial data is currently available. "
-                "Please upload financial data before starting the close."
-            ),
-            "available_periods": {},
-        }
-
-    missing_sources = []
-    available_sources = []
-
-    for source_name, period in available_periods.items():
-        source_start = period["start"]
-        source_end = period["end"]
-
-        if (
-            source_start <= requested_start
-            and source_end >= requested_end
-        ):
-            available_sources.append(source_name)
-        else:
-            missing_sources.append(source_name)
-
-    required_sources = {
-        "bank",
-        "accounting",
-        "invoices",
+    files = {
+        "bank": DATA_DIR / "bank_transactions.csv",
+        "accounting": DATA_DIR / "accounting_transactions.csv",
+        "invoices": DATA_DIR / "invoices.csv",
     }
 
-    missing_required = sorted(
-        required_sources - set(available_sources)
-    )
+    source_names = {
+        "bank": "Bank transactions",
+        "accounting": "Accounting transactions",
+        "invoices": "Invoices",
+    }
 
-    if missing_required:
-        requested_month = requested_start.strftime("%B %Y")
+    available_periods = {}
+    missing_sources = []
 
-        source_names = {
-            "bank": "Bank transactions",
-            "accounting": "Accounting transactions",
-            "invoices": "Invoices",
+    # ------------------------------------------------------------
+    # Bank and Accounting
+    # ------------------------------------------------------------
+
+    for source_name in ["bank", "accounting"]:
+        df = _read_csv_safely(files[source_name])
+
+        if df.empty or "transaction_date" not in df.columns:
+            missing_sources.append(source_name)
+            continue
+
+        dates = pd.to_datetime(
+            df["transaction_date"],
+            errors="coerce",
+        )
+
+        valid_dates = dates[
+            (dates.dt.date >= requested_start)
+            & (dates.dt.date <= requested_end)
+        ].dropna()
+
+        if valid_dates.empty:
+            missing_sources.append(source_name)
+            continue
+
+        available_periods[source_name] = {
+            "start": valid_dates.min().date(),
+            "end": valid_dates.max().date(),
+            "records": len(valid_dates),
         }
 
+    # ------------------------------------------------------------
+    # Invoices
+    #
+    # For month-end purposes, use due_date to determine
+    # whether an invoice belongs to the selected period.
+    # ------------------------------------------------------------
+
+    invoice_df = _read_csv_safely(files["invoices"])
+
+    if (
+        invoice_df.empty
+        or "due_date" not in invoice_df.columns
+    ):
+        missing_sources.append("invoices")
+    else:
+        due_dates = pd.to_datetime(
+            invoice_df["due_date"],
+            errors="coerce",
+        )
+
+        valid_due_dates = due_dates[
+            (due_dates.dt.date >= requested_start)
+            & (due_dates.dt.date <= requested_end)
+        ].dropna()
+
+        if valid_due_dates.empty:
+            missing_sources.append("invoices")
+        else:
+            available_periods["invoices"] = {
+                "start": valid_due_dates.min().date(),
+                "end": valid_due_dates.max().date(),
+                "records": len(valid_due_dates),
+            }
+
+    # ------------------------------------------------------------
+    # Final validation
+    # ------------------------------------------------------------
+
+    requested_month = requested_start.strftime("%B %Y")
+
+    if missing_sources:
         missing_labels = [
             source_names[source]
-            for source in missing_required
+            for source in missing_sources
         ]
 
         return {
@@ -178,14 +223,14 @@ def validate_requested_period(
                 f"before starting the month-end close."
             ),
             "available_periods": available_periods,
-            "missing_sources": missing_required,
+            "missing_sources": missing_sources,
         }
 
     return {
         "valid": True,
         "message": (
             f"Financial data is available for "
-            f"{requested_start.strftime('%B %Y')}."
+            f"{requested_month}."
         ),
         "available_periods": available_periods,
         "missing_sources": [],
