@@ -148,64 +148,195 @@ if data_source == "Upload My Data":
         )
 
 if run_button:
-    validation = validate_requested_period(
-        period_start=str(period_start),
-        period_end=str(period_end),
-    )
 
-    if not validation["valid"]:
-        st.session_state.close_result = None
+    # ============================================================
+    # USER UPLOADED DATA
+    # ============================================================
 
-        st.error(
-            f"❌ {validation['message']}"
-        )
+    if data_source == "Upload My Data":
 
-        available_periods = validation.get(
-            "available_periods",
-            {},
-        )
+        if (
+            uploaded_bank is None
+            or uploaded_accounting is None
+            or uploaded_invoices is None
+        ):
+            st.error(
+                "❌ Please upload all three required files: "
+                "Bank Transactions, Accounting Transactions, "
+                "and Invoices."
+            )
 
-        if available_periods:
-            st.info("Available data periods:")
-
-            for source, period in available_periods.items():
-                source_label = source.replace(
-                    "_",
-                    " ",
-                ).title()
-
-                st.write(
-                    f"**{source_label}:** "
-                    f"{period['start']} → {period['end']} "
-                    f"({period['records']} records)"
+        else:
+            try:
+                bank_df = read_uploaded_file(
+                    uploaded_bank
                 )
+
+                accounting_df = read_uploaded_file(
+                    uploaded_accounting
+                )
+
+                invoices_df = read_uploaded_file(
+                    uploaded_invoices
+                )
+
+                bank_validation = (
+                    validate_uploaded_data_structure(
+                        bank_df,
+                        "bank",
+                    )
+                )
+
+                accounting_validation = (
+                    validate_uploaded_data_structure(
+                        accounting_df,
+                        "accounting",
+                    )
+                )
+
+                invoice_validation = (
+                    validate_uploaded_data_structure(
+                        invoices_df,
+                        "invoices",
+                    )
+                )
+
+                validations = [
+                    (
+                        "Bank Transactions",
+                        bank_validation,
+                    ),
+                    (
+                        "Accounting Transactions",
+                        accounting_validation,
+                    ),
+                    (
+                        "Invoices",
+                        invoice_validation,
+                    ),
+                ]
+
+                validation_errors = [
+                    f"{name}: {result['message']}"
+                    for name, result in validations
+                    if not result["valid"]
+                ]
+
+                if validation_errors:
+                    st.error(
+                        "❌ Uploaded data validation failed."
+                    )
+
+                    for error in validation_errors:
+                        st.write(f"• {error}")
+
+                else:
+                    period_validation = (
+                        validate_uploaded_period_data(
+                            bank_df=bank_df,
+                            accounting_df=accounting_df,
+                            invoices_df=invoices_df,
+                            period_start=str(period_start),
+                            period_end=str(period_end),
+                        )
+                    )
+
+                    if not period_validation["valid"]:
+                        st.error(
+                            f"❌ {period_validation['message']}"
+                        )
+
+                    else:
+                        st.success(
+                            "✓ Uploaded data is valid for the "
+                            "selected period."
+                        )
+
+                        st.session_state.uploaded_data = {
+                            "bank": period_validation[
+                                "filtered_data"
+                            ]["bank"],
+                            "accounting": period_validation[
+                                "filtered_data"
+                            ]["accounting"],
+                            "invoices": period_validation[
+                                "filtered_data"
+                            ]["invoices"],
+                        }
+
+            except Exception as exc:
+                st.error(
+                    f"Unable to process uploaded files: {exc}"
+                )
+
+    # ============================================================
+    # DEMO DATA
+    # ============================================================
 
     else:
-        st.session_state.running = True
 
-        try:
-            with st.spinner(
-                "CloseLoop is executing the month-end workflow..."
-            ):
-                result = run_close(
-                    run_name=run_name,
-                    period_start=str(period_start),
-                    period_end=str(period_end),
+        validation = validate_requested_period(
+            period_start=str(period_start),
+            period_end=str(period_end),
+        )
+
+        if not validation["valid"]:
+            st.session_state.close_result = None
+
+            st.error(
+                f"❌ {validation['message']}"
+            )
+
+            available_periods = validation.get(
+                "available_periods",
+                {},
+            )
+
+            if available_periods:
+                st.info("Available data periods:")
+
+                for source, period in available_periods.items():
+                    source_label = (
+                        source.replace(
+                            "_",
+                            " ",
+                        ).title()
+                    )
+
+                    st.write(
+                        f"**{source_label}:** "
+                        f"{period['start']} → "
+                        f"{period['end']} "
+                        f"({period['records']} records)"
+                    )
+
+        else:
+            st.session_state.running = True
+
+            try:
+                with st.spinner(
+                    "CloseLoop is executing "
+                    "the month-end workflow..."
+                ):
+                    result = run_close(
+                        run_name=run_name,
+                        period_start=str(period_start),
+                        period_end=str(period_end),
+                    )
+
+                st.session_state.close_result = result
+
+                st.success(
+                    "✓ Month-end close workflow completed."
                 )
 
-            st.session_state.close_result = result
+            except Exception as exc:
+                st.error(
+                    f"Workflow error: {exc}"
+                )
 
-            st.success(
-                "✓ Month-end close workflow completed."
-            )
-
-        except Exception as exc:
-            st.error(
-                f"Workflow error: {exc}"
-            )
-
-        finally:
-            st.session_state.running = False
+            finally:
+                st.session_state.running = False
 
 
 # ============================================================
