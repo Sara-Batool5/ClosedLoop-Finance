@@ -3,7 +3,12 @@ import pandas as pd
 
 from workflow.graph import run_close
 from database.supabase import update_investigation_review
-from tools.file_tools import validate_requested_period
+from tools.file_tools import (
+    validate_requested_period,
+    read_uploaded_file,
+    validate_uploaded_data_structure,
+    validate_uploaded_period_data,
+)
 
 
 # ============================================================
@@ -95,6 +100,52 @@ with st.sidebar:
 # ============================================================
 # RUN WORKFLOW
 # ============================================================
+
+st.divider()
+
+st.subheader("📁 Financial Data Source")
+
+data_source = st.radio(
+    "Choose how to provide financial data",
+    options=[
+        "Use Demo Data",
+        "Upload My Data",
+    ],
+    horizontal=True,
+)
+
+uploaded_bank = None
+uploaded_accounting = None
+uploaded_invoices = None
+
+if data_source == "Upload My Data":
+    st.info(
+        "Upload CSV or Excel files containing your bank, "
+        "accounting, and invoice data."
+    )
+
+    upload_col1, upload_col2, upload_col3 = st.columns(3)
+
+    with upload_col1:
+        uploaded_bank = st.file_uploader(
+            "Bank Transactions",
+            type=["csv", "xlsx"],
+            key="bank_upload",
+        )
+
+    with upload_col2:
+        uploaded_accounting = st.file_uploader(
+            "Accounting Transactions",
+            type=["csv", "xlsx"],
+            key="accounting_upload",
+        )
+
+    with upload_col3:
+        uploaded_invoices = st.file_uploader(
+            "Invoices",
+            type=["csv", "xlsx"],
+            key="invoice_upload",
+        )
 
 if run_button:
     validation = validate_requested_period(
