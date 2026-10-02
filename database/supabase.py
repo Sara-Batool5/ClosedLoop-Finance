@@ -429,3 +429,33 @@ def get_audit_logs(
     )
 
     return response.data or []
+
+
+def update_investigation_review(
+    investigation_id: int,
+    review_status: str,
+    reviewed_by: str,
+    review_comment: str,
+) -> dict:
+    client = get_supabase_client()
+
+    response = (
+        client.table("investigations")
+        .update(
+            {
+                "review_status": review_status,
+                "reviewed_by": reviewed_by,
+                "review_comment": review_comment,
+                "reviewed_at": pd.Timestamp.now(tz="UTC").isoformat(),
+            }
+        )
+        .eq("id", investigation_id)
+        .execute()
+    )
+
+    if not response.data:
+        raise ValueError(
+            f"Investigation {investigation_id} could not be updated."
+        )
+
+    return response.data[0]
