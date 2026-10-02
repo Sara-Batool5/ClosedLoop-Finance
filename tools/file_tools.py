@@ -251,3 +251,215 @@ def validate_requested_period(
         "available_periods": available_periods,
         "missing_sources": [],
     }
+
+def read_uploaded_file(
+    uploaded_file,
+) -> pd.DataFrame:
+    """
+    Read a Streamlit uploaded CSV or Excel file.
+    """
+
+    file_name = uploaded_file.name.lower()
+
+    if file_name.endswith(".csv"):
+        return pd.read_csv(uploaded_file)
+
+    if file_name.endswith(".xlsx"):
+        return pd.read_excel(
+            uploaded_file,
+            engine="openpyxl",
+        )
+
+    raise ValueError(
+        f"Unsupported file format: {uploaded_file.name}. "
+        "Please upload a CSV or XLSX file."
+    )
+
+
+def validate_uploaded_data_structure(
+    df: pd.DataFrame,
+    source_type: str,
+) -> dict:
+    """
+    Validate the basic column structure expected by CloseLoop.
+    """
+
+    required_columns = {
+        "bank": [
+            "transaction_date",
+            "transaction_id",
+            "description",
+            "amount",
+            "currency",
+            "transaction_type",
+            "vendor",
+            "reference",
+        ],
+        "accounting": [
+            "transaction_date",
+            "transaction_id",
+            "description",
+            "amount",
+            "currency",
+            "transaction_type",
+            "vendor",
+            "reference",
+        ],
+        "invoices": [
+            "invoice_date",
+            "invoice_id",
+            "customer",
+            "amount",
+            "currency",
+            "due_date",
+            "status",
+        ],
+    }
+
+    if source_type not in required_columns:
+        return {
+            "valid": False,
+            "message": f"Unknown data source: {source_type}",
+        }
+
+    missing_columns = [
+        column
+        for column in required_columns[source_type]
+        if column not in df.columns
+    ]
+
+    if missing_columns:
+        return {
+            "valid": False,
+            "message": (
+                f"Missing required columns: "
+                f"{', '.join(missing_columns)}"
+            ),
+        }
+
+    if df.empty:
+        return {
+            "valid": False,
+            "message": "The uploaded file contains no records.",
+        }
+
+    return {
+        "valid": True,
+        "message": (
+            f"{len(df)} records loaded successfully."
+        ),
+    }
+
+
+def filter_data_for_period(
+    df: pd.DataFrame,
+    source_type: str,
+    period_start: str,
+    period_end: str,
+) -> pd.DataFrame:
+    """
+    Return only records belonging to the requested close period.
+
+    Bank/accounting use transaction_date.
+    Invoices use due_date for month-end processing.
+    """
+
+    if source_type in {"bank", "accounting"}:
+        date_column = "transaction_date"
+    elif source_type == "invoices":
+        date_column = "due_date"
+    else:
+        raise ValueError(
+            f"Unsupported source type: {source_type}"
+        )
+
+    if date_column not in df.columns:
+        raise ValueError(
+            f"Required date column '{date_column}' "
+            f"is missing from the {source_type} data."
+        )
+
+    working_df = df.copy()
+
+    working_df[date_column] = pd.to_datetime(
+        working_df[date_column],
+        errors="coerce",
+    )
+
+    start_date = pd.to_datetime(period_start)
+    end_date = pd.to_datetime(period_end)
+
+    filtered_df = working_df[
+        (working_df[date_column] >= start_date)
+        & (working_df[date_column] <= end_date)
+    ].copy()
+
+    return filtered_df
+
+
+def validate_uploaded_period_data(
+    bank_df: pd.DataFrame,
+    accounting_df: pd.DataFrame,
+    invoices_df: pd.DataFrame,
+    period_start: str,
+    period_end: str,
+) -> dict:
+    """
+    Validate that all required uploaded sources contain
+    data for the requested period.
+    """
+
+    datasets = {
+        "bank": bank_df,
+        "accounting": accounting_df,
+        "invoices": invoices_df,
+    }
+
+    source_labels = {
+        "bank": "Bank transactions",
+        "accounting": "Accounting transactions",
+        "invoices": "Invoices",
+    }
+
+    filtered_data = {}
+    missing_sources = []
+
+    for source_type, df in datasets.items():
+        filtered_df = filter_data_for_period(
+            df=df,
+            source_type=source_type,
+            period_start=period_start,
+            period_end=period_end,
+        )
+
+        filtered_data[source_type] = filtered_df
+
+        if filtered_df.empty:
+            missing_sources.append(source_type)
+
+    if missing_sources:
+        missing_labels = [
+            source_labels[source]
+            for source in missing_sources
+        ]
+
+        return {
+            "valid": False,
+            "message": (
+                "The uploaded data is incomplete for the "
+                f"selected period. Missing data: "
+                f"{', '.join(missing_labels)}."
+            ),
+            "filtered_data": filtered_data,
+            "missing_sources": missing_sources,
+        }
+
+    return {
+        "valid": True,
+        "message": (
+            "All required financial data is available "
+            "for the selected period."
+        ),
+        "filtered_data": filtered_data,
+        "missing_sources": [],
+    }
