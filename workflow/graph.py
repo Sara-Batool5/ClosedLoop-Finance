@@ -545,6 +545,7 @@ def run_close(
     run_name: str = "Month-End Close",
     period_start: str = "",
     period_end: str = "",
+    uploaded_data: dict | None = None,
 ) -> CloseState:
     """
     Execute the complete CloseLoop workflow.
@@ -554,6 +555,7 @@ def run_close(
         "run_name": run_name,
         "period_start": period_start,
         "period_end": period_end,
+        "uploaded_data": uploaded_data or {},
         "status": "Starting CloseLoop...",
         "current_agent": "Starting",
     }
