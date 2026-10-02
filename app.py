@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 
 from workflow.graph import run_close
+from database.supabase import update_investigation_review
 
 
 # ============================================================
@@ -1277,3 +1278,135 @@ else:
             st.info(
                 "No audit log records found."
             )
+
+
+    # ============================================================
+    # HUMAN REVIEW & APPROVAL
+    # ============================================================
+
+    st.divider()
+
+    st.subheader("👤 Human Review & Approval")
+
+    investigations = database_records.get(
+        "investigations",
+        [],
+    )
+
+    if not investigations:
+        st.info("No investigations require human review.")
+    else:
+        review_items = [
+            item
+            for item in investigations
+            if item.get("review_status", "pending") == "pending"
+        ]
+
+        if not review_items:
+            st.success("✓ All investigations have been reviewed.")
+        else:
+            st.warning(
+                f"{len(review_items)} investigation(s) are waiting for human review."
+            )
+
+            for investigation in review_items:
+                investigation_id = investigation.get("id")
+                issue_type = investigation.get(
+                    "issue_type",
+                    "Unknown issue",
+                )
+                question = investigation.get(
+                    "question",
+                    "No question available.",
+                )
+                findings = investigation.get(
+                    "findings",
+                    "No findings available.",
+                )
+                recommended_action = investigation.get(
+                    "recommended_action",
+                    "No recommendation available.",
+                )
+
+                with st.expander(
+                    f"🔎 Investigation #{investigation_id} — {issue_type}"
+                ):
+                    st.markdown("### Issue")
+
+                    st.write(question)
+
+                    st.markdown("### Findings")
+
+                    st.write(findings)
+
+                    st.markdown("### Recommended Action")
+
+                    st.write(recommended_action)
+
+                    st.markdown("### Reviewer")
+
+                    reviewer = st.text_input(
+                        "Reviewer name",
+                        key=f"reviewer_{investigation_id}",
+                        placeholder="Enter reviewer name",
+                    )
+
+                    review_comment = st.text_area(
+                        "Review comment",
+                        key=f"comment_{investigation_id}",
+                        placeholder="Explain your approval or rejection decision.",
+                    )
+
+                    col1, col2 = st.columns(2)
+
+                    with col1:
+                        approve_clicked = st.button(
+                            "✅ Approve",
+                            key=f"approve_{investigation_id}",
+                            use_container_width=True,
+                        )
+
+                    with col2:
+                        reject_clicked = st.button(
+                            "❌ Reject",
+                            key=f"reject_{investigation_id}",
+                            use_container_width=True,
+                        )
+
+                    if approve_clicked or reject_clicked:
+                        if not reviewer.strip():
+                            st.error(
+                                "Please enter the reviewer name before submitting the decision."
+                            )
+                        elif not review_comment.strip():
+                            st.error(
+                                "Please enter a review comment before submitting the decision."
+                            )
+                        else:
+                            review_status = (
+                                "approved"
+                                if approve_clicked
+                                else "rejected"
+                            )
+
+                            try:
+                                updated_investigation = (
+                                    update_investigation_review(
+                                        investigation_id=investigation_id,
+                                        review_status=review_status,
+                                        reviewed_by=reviewer.strip(),
+                                        review_comment=review_comment.strip(),
+                                    )
+                                )
+
+                                st.success(
+                                    f"Investigation #{investigation_id} "
+                                    f"marked as {review_status}."
+                                )
+
+                                st.rerun()
+
+                            except Exception as exc:
+                                st.error(
+                                    f"Unable to save review decision: {exc}"
+                                )
