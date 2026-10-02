@@ -3,6 +3,7 @@ import pandas as pd
 
 from workflow.graph import run_close
 from database.supabase import update_investigation_review
+from tools.file_tools import validate_requested_period
 
 
 # ============================================================
@@ -96,36 +97,64 @@ with st.sidebar:
 # ============================================================
 
 if run_button:
+    validation = validate_requested_period(
+        period_start=str(period_start),
+        period_end=str(period_end),
+    )
 
-    st.session_state.running = True
-
-    try:
-
-        with st.spinner(
-            "CloseLoop is executing the month-end workflow..."
-        ):
-
-            result = run_close(
-                run_name=run_name,
-                period_start=str(period_start),
-                period_end=str(period_end),
-            )
-
-        st.session_state.close_result = result
-
-        st.success(
-            "✓ Month-end close workflow completed."
-        )
-
-    except Exception as exc:
+    if not validation["valid"]:
+        st.session_state.close_result = None
 
         st.error(
-            f"Workflow error: {exc}"
+            f"❌ {validation['message']}"
         )
 
-    finally:
+        available_periods = validation.get(
+            "available_periods",
+            {},
+        )
 
-        st.session_state.running = False
+        if available_periods:
+            st.info("Available data periods:")
+
+            for source, period in available_periods.items():
+                source_label = source.replace(
+                    "_",
+                    " ",
+                ).title()
+
+                st.write(
+                    f"**{source_label}:** "
+                    f"{period['start']} → {period['end']} "
+                    f"({period['records']} records)"
+                )
+
+    else:
+        st.session_state.running = True
+
+        try:
+            with st.spinner(
+                "CloseLoop is executing the month-end workflow..."
+            ):
+                result = run_close(
+                    run_name=run_name,
+                    period_start=str(period_start),
+                    period_end=str(period_end),
+                )
+
+            st.session_state.close_result = result
+
+            st.success(
+                "✓ Month-end close workflow completed."
+            )
+
+        except Exception as exc:
+            st.error(
+                f"Workflow error: {exc}"
+            )
+
+        finally:
+            st.session_state.running = False
 
 
 # ============================================================
