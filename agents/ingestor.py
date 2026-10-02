@@ -160,6 +160,53 @@ def load_accounting_transactions() -> pd.DataFrame:
     return normalize_transactions(df, "accounting")
 
 
+def normalize_invoices(
+    df: pd.DataFrame,
+) -> pd.DataFrame:
+    """Normalize invoice data into a consistent format."""
+
+    df = df.copy()
+
+    df["invoice_date"] = pd.to_datetime(
+        df["invoice_date"],
+        errors="coerce",
+    )
+
+    df["due_date"] = pd.to_datetime(
+        df["due_date"],
+        errors="coerce",
+    )
+
+    df["amount"] = pd.to_numeric(
+        df["amount"],
+        errors="coerce",
+    )
+
+    df["currency"] = (
+        df["currency"]
+        .fillna("USD")
+        .astype(str)
+        .str.upper()
+        .str.strip()
+    )
+
+    df["customer"] = (
+        df["customer"]
+        .fillna("")
+        .astype(str)
+        .str.strip()
+    )
+
+    df["status"] = (
+        df["status"]
+        .fillna("")
+        .astype(str)
+        .str.strip()
+    )
+
+    return df
+
+
 def load_invoices() -> pd.DataFrame:
     """Load and normalize invoices."""
 
@@ -203,7 +250,9 @@ def load_invoices() -> pd.DataFrame:
     return df
 
 
-def run_ingestor() -> dict:
+def run_ingestor(
+    uploaded_data: dict | None = None,
+) -> dict:
     """
     Run the complete ingestion process.
 
@@ -212,9 +261,55 @@ def run_ingestor() -> dict:
     invoices, and ingestion statistics.
     """
 
-    bank = load_bank_transactions()
-    accounting = load_accounting_transactions()
-    invoices = load_invoices()
+        if uploaded_data:
+            bank = pd.DataFrame(
+                uploaded_data.get("bank", [])
+            )
+
+            accounting = pd.DataFrame(
+                uploaded_data.get("accounting", [])
+            )
+
+            invoices = pd.DataFrame(
+                uploaded_data.get("invoices", [])
+            )
+
+            validate_columns(
+                bank,
+                REQUIRED_COLUMNS["bank"],
+                "Uploaded bank transactions",
+            )
+
+            validate_columns(
+                accounting,
+                REQUIRED_COLUMNS["accounting"],
+                "Uploaded accounting transactions",
+            )
+
+            validate_columns(
+                invoices,
+                REQUIRED_COLUMNS["invoices"],
+                "Uploaded invoices",
+            )
+
+            bank = normalize_transactions(
+                bank,
+                "bank",
+            )
+
+            accounting = normalize_transactions(
+                accounting,
+                "accounting",
+            )
+
+            invoices = normalize_invoices(
+                invoices,
+            )
+
+        else:
+            bank = load_bank_transactions()
+            accounting = load_accounting_transactions()
+            invoices = load_invoices()
 
     # Basic validation
     bank_invalid_amounts = int(bank["amount"].isna().sum())
