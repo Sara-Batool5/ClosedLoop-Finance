@@ -68,38 +68,54 @@ def get_available_data_period() -> dict:
         "invoices": DATA_DIR / "invoices.csv",
     }
 
-    date_columns = [
-        "transaction_date",
-        "date",
-        "invoice_date",
-    ]
-
     periods = {}
 
-    for source_name, file_path in files.items():
+    # ------------------------------------------------------------
+    # Bank and accounting data
+    # ------------------------------------------------------------
+
+    for source_name in ["bank", "accounting"]:
+        file_path = files[source_name]
         df = _read_csv_safely(file_path)
 
         if df.empty:
             continue
 
-        found_dates = None
+        if "transaction_date" not in df.columns:
+            continue
 
-        for column in date_columns:
-            if column in df.columns:
-                converted = pd.to_datetime(
-                    df[column],
-                    errors="coerce",
-                ).dropna()
+        dates = pd.to_datetime(
+            df["transaction_date"],
+            errors="coerce",
+        ).dropna()
 
-                if not converted.empty:
-                    found_dates = converted
-                    break
+        if dates.empty:
+            continue
 
-        if found_dates is not None:
-            periods[source_name] = {
-                "start": found_dates.min().date(),
-                "end": found_dates.max().date(),
-                "records": len(df),
+        periods[source_name] = {
+            "start": dates.min().date(),
+            "end": dates.max().date(),
+            "records": len(df),
+        }
+
+    # ------------------------------------------------------------
+    # Invoice data
+    # Use due_date for month-end period validation.
+    # ------------------------------------------------------------
+
+    invoice_df = _read_csv_safely(files["invoices"])
+
+    if not invoice_df.empty and "due_date" in invoice_df.columns:
+        due_dates = pd.to_datetime(
+            invoice_df["due_date"],
+            errors="coerce",
+        ).dropna()
+
+        if not due_dates.empty:
+            periods["invoices"] = {
+                "start": due_dates.min().date(),
+                "end": due_dates.max().date(),
+                "records": len(invoice_df),
             }
 
     return periods
