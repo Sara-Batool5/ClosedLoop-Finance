@@ -4,7 +4,13 @@ import pandas as pd
 
 
 def _dataframe_from_records(records) -> pd.DataFrame:
-    """Convert a list of dictionaries into a clean DataFrame."""
+    """Convert records or an existing DataFrame into a clean DataFrame."""
+    if records is None:
+        return pd.DataFrame()
+
+    if isinstance(records, pd.DataFrame):
+        return records.copy()
+
     if not records:
         return pd.DataFrame()
 
@@ -169,40 +175,19 @@ def _write_summary(
     )
 
 
-def _write_reconciliation(
-    writer: pd.ExcelWriter,
-    close_result: dict,
-) -> None:
-    """Create the Reconciliation sheet."""
+def _write_reconciliation(writer, close_result: dict) -> None:
+    reconciliation = close_result.get("reconciliation_result", {})
+    results = reconciliation.get("results")
 
-    reconciliation = close_result.get(
-        "reconciliation_result",
-        {},
-    )
-
-    results = reconciliation.get(
-        "results",
-        [],
-    )
-
-    database_records = close_result.get(
-        "database_records",
-        {},
-    )
-
-    if not results:
+    if results is None:
+        database_records = close_result.get("database_records", {})
         results = database_records.get(
             "reconciliation_results",
             [],
         )
 
     df = _dataframe_from_records(results)
-
-    _write_dataframe(
-        writer,
-        df,
-        "Reconciliation",
-    )
+    _write_dataframe(writer, df, "Reconciliation")
 
 
 def _write_investigations(
