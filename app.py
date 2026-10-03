@@ -1664,3 +1664,38 @@ else:
                                 st.error(
                                     f"Unable to save review decision: {exc}"
                                 )
+    # ============================================================
+    # DOWNLOAD AUDIT REPORT
+    # ============================================================
+
+    st.divider()
+
+    st.subheader("📥 Final Audit Report")
+
+    st.write(
+        "Download the complete month-end close report "
+        "including reconciliation, investigations, audit findings, "
+        "transactions, and audit trail."
+    )
+
+    try:
+        audit_report = generate_audit_report(result)
+
+        st.download_button(
+            label="📊 Download Excel Audit Report",
+            data=audit_report,
+            file_name=(
+                f"{result.get('run_name', 'month_end_close')}"
+                "_audit_report.xlsx"
+            ),
+            mime=(
+                "application/vnd.openxmlformats-officedocument."
+                "spreadsheetml.sheet"
+            ),
+            use_container_width=True,
+        )
+
+    except Exception as exc:
+        st.error(
+            f"Unable to generate the audit report: {exc}"
+        )
