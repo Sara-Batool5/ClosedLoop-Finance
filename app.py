@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 
 from workflow.graph import run_close
+from reports.report_generator import generate_audit_report
 from database.supabase import update_investigation_review
 from tools.file_tools import (
     validate_requested_period,
