@@ -437,6 +437,165 @@ def apply_custom_css():
 
         }
 
+
+        /* =========================================================
+           CLOSELOOP BRAND HEADER
+        ========================================================= */
+
+        .cl-brand-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 1rem 1.25rem;
+
+            margin-bottom: 1.5rem;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(99, 102, 241, 0.10),
+                    rgba(139, 92, 246, 0.06)
+                );
+
+            border: 1px solid var(--border-color);
+
+            border-radius: 18px;
+        }
+
+
+        .cl-brand-left {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+
+        .cl-logo {
+            width: 48px;
+            height: 48px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 14px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #6366f1,
+                    #8b5cf6
+                );
+
+            color: #ffffff !important;
+
+            font-size: 1rem;
+            font-weight: 800;
+
+            box-shadow:
+                0 8px 24px rgba(99, 102, 241, 0.25);
+        }
+
+
+        .cl-brand-name {
+            color: var(--text-color) !important;
+
+            font-size: 1.35rem;
+            font-weight: 800;
+
+            line-height: 1.1;
+        }
+
+
+        .cl-brand-tagline {
+            color: var(--secondary-text-color) !important;
+
+            font-size: 0.78rem;
+            font-weight: 500;
+
+            margin-top: 0.2rem;
+        }
+
+
+        .cl-system-status {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+
+            padding: 0.45rem 0.75rem;
+
+            border-radius: 999px;
+
+            background: var(--background-color);
+
+            border: 1px solid var(--border-color);
+
+            color: var(--secondary-text-color) !important;
+
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+
+        .cl-status-dot {
+            width: 8px;
+            height: 8px;
+
+            border-radius: 50%;
+
+            background: #16a34a;
+
+            box-shadow:
+                0 0 0 4px rgba(22, 163, 74, 0.12);
+        }
+
+
+        .cl-page-intro {
+            margin-bottom: 1.75rem;
+        }
+
+
+        .cl-page-intro h1 {
+            margin: 0;
+
+            color: var(--text-color) !important;
+
+            font-size: 2.35rem;
+            font-weight: 800;
+
+            letter-spacing: -0.035em;
+        }
+
+
+        .cl-page-intro p {
+            margin-top: 0.45rem;
+
+            max-width: 780px;
+
+            color: var(--secondary-text-color) !important;
+
+            font-size: 0.98rem;
+            line-height: 1.6;
+        }
+
+
+        @media (max-width: 768px) {
+
+            .cl-brand-header {
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .cl-system-status {
+                display: none;
+            }
+
+            .cl-page-intro h1 {
+                font-size: 1.8rem;
+            }
+        }
+        
         </style>
         """,
         unsafe_allow_html=True,
