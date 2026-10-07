@@ -19,7 +19,7 @@ from tools.file_tools import (
 # ============================================================
 
 st.set_page_config(
-    page_title="CloseLoop | Autonomous Month-End Closer",
+    page_title="ClosedLoop | Autonomous Month-End Closer",
     page_icon="💼",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -40,14 +40,14 @@ if "running" not in st.session_state:
 
 
 # ============================================================
-# CLOSELOOP BRAND HEADER
+# CLOSEDLOOP BRAND HEADER
 # ============================================================
 
 header_col1, header_col2 = st.columns([4, 1])
 
 with header_col1:
     st.markdown(
-        "## CloseLoop"
+        "## ClosedLoop"
     )
 
     st.caption(
@@ -286,7 +286,7 @@ if run_button:
 
                         try:
                             with st.spinner(
-                                "CloseLoop is executing the month-end workflow..."
+                                "ClosedLoop is executing the month-end workflow..."
                             ):
                                 result = run_close(
                                     run_name=run_name,
@@ -376,7 +376,7 @@ if run_button:
 
             try:
                 with st.spinner(
-                    "CloseLoop is executing "
+                    "ClosedLoop is executing "
                     "the month-end workflow..."
                 ):
                     result = run_close(
@@ -421,7 +421,7 @@ if not result:
     )
 
     st.info(
-        "CloseLoop will ingest financial data, "
+        "ClosedLoop will ingest financial data, "
         "reconcile transactions, investigate exceptions, "
         "and perform audit verification."
     )
