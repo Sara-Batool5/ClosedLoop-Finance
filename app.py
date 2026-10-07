@@ -543,16 +543,38 @@ else:
     # KPI VALUES
     # ------------------------------------------------------------
 
-    total_transactions = len(reconciliation_details or [])
-
-    matched_transactions = sum(
-        1
-        for item in (reconciliation_details or [])
-        if item.get("match_status") in [
-            "matched",
-            "matched_by_vendor_amount",
-        ]
-    )
+    if reconciliation_details is None:
+        total_transactions = 0
+        matched_transactions = 0
+    
+    elif isinstance(reconciliation_details, pd.DataFrame):
+    
+        total_transactions = len(reconciliation_details)
+    
+        if "match_status" in reconciliation_details.columns:
+            matched_transactions = reconciliation_details[
+                reconciliation_details["match_status"].isin(
+                    [
+                        "matched",
+                        "matched_by_vendor_amount",
+                    ]
+                )
+            ].shape[0]
+        else:
+            matched_transactions = 0
+    
+    else:
+    
+        total_transactions = len(reconciliation_details)
+    
+        matched_transactions = sum(
+            1
+            for item in reconciliation_details
+            if item.get("match_status") in [
+                "matched",
+                "matched_by_vendor_amount",
+            ]
+        )
 
     total_exceptions = reconciliation_summary.get(
         "total_exceptions",
