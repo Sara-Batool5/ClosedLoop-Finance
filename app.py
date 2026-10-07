@@ -543,20 +543,15 @@ else:
     # KPI VALUES
     # ------------------------------------------------------------
 
-    total_transactions = reconciliation_summary.get(
-        "total_transactions",
-        ingestion_statistics.get(
-            "total_transactions",
-            0,
-        ),
-    )
-    
-    matched_transactions = reconciliation_summary.get(
-        "matched_transactions",
-        ingestion_statistics.get(
-            "matched_transactions",
-            0,
-        ),
+    total_transactions = len(reconciliation_details or [])
+
+    matched_transactions = sum(
+        1
+        for item in (reconciliation_details or [])
+        if item.get("match_status") in [
+            "matched",
+            "matched_by_vendor_amount",
+        ]
     )
 
     total_exceptions = reconciliation_summary.get(
