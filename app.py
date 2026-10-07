@@ -723,13 +723,19 @@ else:
     st.header("📊 Close Overview")
 
     total_transactions = reconciliation_summary.get(
-        "total_comparisons",
-        0,
+        "total_transactions",
+        ingestion_statistics.get(
+            "total_transactions",
+            0,
+        ),
     )
-
+    
     matched_transactions = reconciliation_summary.get(
-        "matched",
-        0,
+        "matched_transactions",
+        ingestion_statistics.get(
+            "matched_transactions",
+            0,
+        ),
     )
 
     exception_count = reconciliation_summary.get(
