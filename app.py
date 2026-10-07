@@ -545,12 +545,18 @@ else:
 
     total_transactions = reconciliation_summary.get(
         "total_transactions",
-        0,
+        ingestion_statistics.get(
+            "total_transactions",
+            0,
+        ),
     )
-
+    
     matched_transactions = reconciliation_summary.get(
         "matched_transactions",
-        0,
+        ingestion_statistics.get(
+            "matched_transactions",
+            0,
+        ),
     )
 
     total_exceptions = reconciliation_summary.get(
@@ -716,118 +722,118 @@ else:
         )
 
 
-    # ========================================================
-    # CLOSE OVERVIEW
-    # ========================================================
+    # # ========================================================
+    # # CLOSE OVERVIEW
+    # # ========================================================
 
-    st.header("📊 Close Overview")
+    # st.header("📊 Close Overview")
 
-    total_transactions = reconciliation_summary.get(
-        "total_transactions",
-        ingestion_statistics.get(
-            "total_transactions",
-            0,
-        ),
-    )
+    # total_transactions = reconciliation_summary.get(
+    #     "total_transactions",
+    #     ingestion_statistics.get(
+    #         "total_transactions",
+    #         0,
+    #     ),
+    # )
     
-    matched_transactions = reconciliation_summary.get(
-        "matched_transactions",
-        ingestion_statistics.get(
-            "matched_transactions",
-            0,
-        ),
-    )
+    # matched_transactions = reconciliation_summary.get(
+    #     "matched_transactions",
+    #     ingestion_statistics.get(
+    #         "matched_transactions",
+    #         0,
+    #     ),
+    # )
 
-    exception_count = reconciliation_summary.get(
-        "total_exceptions",
-        0,
-    )
+    # exception_count = reconciliation_summary.get(
+    #     "total_exceptions",
+    #     0,
+    # )
 
-    human_review_count = audit_summary.get(
-        "human_review_count",
-        0,
-    )
+    # human_review_count = audit_summary.get(
+    #     "human_review_count",
+    #     0,
+    # )
 
-    metric1, metric2, metric3, metric4 = st.columns(4)
+    # metric1, metric2, metric3, metric4 = st.columns(4)
 
-    with metric1:
+    # with metric1:
 
-        st.metric(
-            "Transactions",
-            total_transactions,
-        )
+    #     st.metric(
+    #         "Transactions",
+    #         total_transactions,
+    #     )
 
-    with metric2:
+    # with metric2:
 
-        st.metric(
-            "Matched",
-            matched_transactions,
-        )
+    #     st.metric(
+    #         "Matched",
+    #         matched_transactions,
+    #     )
 
-    with metric3:
+    # with metric3:
 
-        st.metric(
-            "Exceptions",
-            exception_count,
-        )
+    #     st.metric(
+    #         "Exceptions",
+    #         exception_count,
+    #     )
 
-    with metric4:
+    # with metric4:
 
-        st.metric(
-            "Human Review",
-            human_review_count,
-        )
+    #     st.metric(
+    #         "Human Review",
+    #         human_review_count,
+    #     )
 
 
-    # ========================================================
-    # AGENT WORKFLOW
-    # ========================================================
+    # # ========================================================
+    # # AGENT WORKFLOW
+    # # ========================================================
 
-    st.header("🤖 Agent Workflow")
+    # st.header("🤖 Agent Workflow")
 
-    agents = [
-        (
-            "1️⃣",
-            "Ingestor",
-            "Data extraction & normalization",
-        ),
-        (
-            "2️⃣",
-            "Reconciler",
-            "Transaction matching",
-        ),
-        (
-            "3️⃣",
-            "Interrogator",
-            "Exception investigation",
-        ),
-        (
-            "4️⃣",
-            "Auditor",
-            "Audit & control verification",
-        ),
-    ]
+    # agents = [
+    #     (
+    #         "1️⃣",
+    #         "Ingestor",
+    #         "Data extraction & normalization",
+    #     ),
+    #     (
+    #         "2️⃣",
+    #         "Reconciler",
+    #         "Transaction matching",
+    #     ),
+    #     (
+    #         "3️⃣",
+    #         "Interrogator",
+    #         "Exception investigation",
+    #     ),
+    #     (
+    #         "4️⃣",
+    #         "Auditor",
+    #         "Audit & control verification",
+    #     ),
+    # ]
 
-    agent_columns = st.columns(4)
+    # agent_columns = st.columns(4)
 
-    for column, agent in zip(
-        agent_columns,
-        agents,
-    ):
+    # for column, agent in zip(
+    #     agent_columns,
+    #     agents,
+    # ):
 
-        with column:
+    #     with column:
 
-            st.subheader(
-                f"{agent[0]} {agent[1]}"
-            )
+    #         st.subheader(
+    #             f"{agent[0]} {agent[1]}"
+    #         )
 
-            st.caption(
-                agent[2]
-            )
+    #         st.caption(
+    #             agent[2]
+    #         )
 
-            st.success(
-                "✓ Completed"
-            )
+    #         st.success(
+    #             "✓ Completed"
+    #         )
 
 
     # ========================================================
