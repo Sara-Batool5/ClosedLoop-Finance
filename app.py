@@ -81,51 +81,19 @@ with st.sidebar:
     # BRAND
     # --------------------------------------------------------
 
-    st.markdown(
-        """
-        <div style="
-            padding: 0.5rem 0 1.25rem 0;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 1.25rem;
-        ">
-            <div style="
-                font-size: 1.35rem;
-                font-weight: 800;
-                color: var(--text-color);
-            ">
-                ClosedLoop
-            </div>
+    st.markdown("## ClosedLoop")
 
-            <div style="
-                font-size: 0.75rem;
-                color: var(--secondary-text-color);
-                margin-top: 0.25rem;
-            ">
-                Autonomous Month-End Closer
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
+    st.caption(
+        "Autonomous Month-End Closer"
     )
+
+    st.divider()
 
     # --------------------------------------------------------
     # WORKSPACE
     # --------------------------------------------------------
 
-    st.markdown(
-        """
-        <div style="
-            font-size: 0.68rem;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            color: var(--secondary-text-color);
-            margin-bottom: 0.6rem;
-        ">
-            WORKSPACE
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    st.caption("WORKSPACE")
 
     st.markdown("**◉  Close Overview**")
     st.markdown("**↔  Reconciliation**")
@@ -141,20 +109,7 @@ with st.sidebar:
     # CLOSE CONFIGURATION
     # --------------------------------------------------------
 
-    st.markdown(
-        """
-        <div style="
-            font-size: 0.68rem;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            color: var(--secondary-text-color);
-            margin-bottom: 0.75rem;
-        ">
-            CLOSE CONFIGURATION
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    st.caption("CLOSE CONFIGURATION")
 
     run_name = st.text_input(
         "Close Run Name",
@@ -181,20 +136,7 @@ with st.sidebar:
     # DATA READINESS
     # --------------------------------------------------------
 
-    st.markdown(
-        """
-        <div style="
-            font-size: 0.68rem;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            color: var(--secondary-text-color);
-            margin-bottom: 0.75rem;
-        ">
-            DATA READINESS
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    st.caption("DATA READINESS")
 
     st.success("✓ Bank Transactions")
     st.success("✓ Accounting Transactions")
@@ -211,21 +153,6 @@ with st.sidebar:
         type="primary",
         use_container_width=True,
         disabled=st.session_state.running,
-    )
-
-    st.markdown(
-        """
-        <div style="
-            text-align: center;
-            margin-top: 0.7rem;
-            font-size: 0.68rem;
-            color: var(--secondary-text-color);
-        ">
-            AI agents will reconcile, investigate<br>
-            and verify the selected close period.
-        </div>
-        """,
-        unsafe_allow_html=True,
     )
 
 
