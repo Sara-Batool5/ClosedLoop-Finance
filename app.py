@@ -43,36 +43,32 @@ if "running" not in st.session_state:
 # CLOSELOOP BRAND HEADER
 # ============================================================
 
+header_col1, header_col2 = st.columns([4, 1])
+
+with header_col1:
+    st.markdown(
+        "## CloseLoop"
+    )
+
+    st.caption(
+        "Autonomous Month-End Closer"
+    )
+
+with header_col2:
+    st.success(
+        "● AI Close System"
+    )
+
 st.markdown(
-    """
-    <div class="cl-brand-header">
-        <div class="cl-brand-left">
-            <div class="cl-logo">CL</div>
-
-            <div>
-                <div class="cl-brand-name">CloseLoop</div>
-                <div class="cl-brand-tagline">
-                    Autonomous Month-End Closer
-                </div>
-            </div>
-        </div>
-
-        <div class="cl-system-status">
-            <span class="cl-status-dot"></span>
-            <span>AI Close System</span>
-        </div>
-    </div>
-
-    <div class="cl-page-intro">
-        <h1>Close the books with confidence.</h1>
-        <p>
-            Reconcile financial data, investigate exceptions,
-            verify controls, and generate an audit-ready close report.
-        </p>
-    </div>
-    """,
-    unsafe_allow_html=True,
+    "### Close the books with confidence."
 )
+
+st.write(
+    "Reconcile financial data, investigate exceptions, "
+    "verify controls, and generate an audit-ready close report."
+)
+
+st.divider()
 
 
 # ============================================================
