@@ -77,7 +77,84 @@ st.divider()
 
 with st.sidebar:
 
-    st.header("⚙️ Close Configuration")
+    # --------------------------------------------------------
+    # BRAND
+    # --------------------------------------------------------
+
+    st.markdown(
+        """
+        <div style="
+            padding: 0.5rem 0 1.25rem 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1.25rem;
+        ">
+            <div style="
+                font-size: 1.35rem;
+                font-weight: 800;
+                color: var(--text-color);
+            ">
+                ClosedLoop
+            </div>
+
+            <div style="
+                font-size: 0.75rem;
+                color: var(--secondary-text-color);
+                margin-top: 0.25rem;
+            ">
+                Autonomous Month-End Closer
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # --------------------------------------------------------
+    # WORKSPACE
+    # --------------------------------------------------------
+
+    st.markdown(
+        """
+        <div style="
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: var(--secondary-text-color);
+            margin-bottom: 0.6rem;
+        ">
+            WORKSPACE
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown("**◉  Close Overview**")
+    st.markdown("**↔  Reconciliation**")
+    st.markdown("**⚠  Exceptions**")
+    st.markdown("**✦  AI Investigations**")
+    st.markdown("**✓  Audit & Controls**")
+    st.markdown("**👤  Human Review**")
+    st.markdown("**↓  Reports**")
+
+    st.divider()
+
+    # --------------------------------------------------------
+    # CLOSE CONFIGURATION
+    # --------------------------------------------------------
+
+    st.markdown(
+        """
+        <div style="
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: var(--secondary-text-color);
+            margin-bottom: 0.75rem;
+        ">
+            CLOSE CONFIGURATION
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     run_name = st.text_input(
         "Close Run Name",
@@ -100,7 +177,24 @@ with st.sidebar:
 
     st.divider()
 
-    st.subheader("📂 Data Sources")
+    # --------------------------------------------------------
+    # DATA READINESS
+    # --------------------------------------------------------
+
+    st.markdown(
+        """
+        <div style="
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: var(--secondary-text-color);
+            margin-bottom: 0.75rem;
+        ">
+            DATA READINESS
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     st.success("✓ Bank Transactions")
     st.success("✓ Accounting Transactions")
@@ -108,11 +202,30 @@ with st.sidebar:
 
     st.divider()
 
+    # --------------------------------------------------------
+    # RUN CLOSE
+    # --------------------------------------------------------
+
     run_button = st.button(
-        "▶ Run Month-End Close",
+        "▶  Run Month-End Close",
         type="primary",
         use_container_width=True,
         disabled=st.session_state.running,
+    )
+
+    st.markdown(
+        """
+        <div style="
+            text-align: center;
+            margin-top: 0.7rem;
+            font-size: 0.68rem;
+            color: var(--secondary-text-color);
+        ">
+            AI agents will reconcile, investigate<br>
+            and verify the selected close period.
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
 
