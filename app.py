@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 
+from styles import apply_custom_css
+
 from workflow.graph import run_close
 from reports.report_generator import generate_audit_report
 from database.supabase import update_investigation_review
@@ -22,6 +24,8 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
+apply_custom_css()
 
 
 # ============================================================
