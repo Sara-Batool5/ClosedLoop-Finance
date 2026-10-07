@@ -527,7 +527,155 @@ else:
         if ingestion_result
         else {}
     )
+    
 
+    # ============================================================
+    # CLOSEDLOOP EXECUTIVE OVERVIEW
+    # ============================================================
+
+    st.markdown("## Close Overview")
+
+    st.caption(
+        "Real-time summary of the selected month-end close."
+    )
+
+    # ------------------------------------------------------------
+    # KPI VALUES
+    # ------------------------------------------------------------
+
+    total_transactions = reconciliation_summary.get(
+        "total_transactions",
+        0,
+    )
+
+    matched_transactions = reconciliation_summary.get(
+        "matched_transactions",
+        0,
+    )
+
+    total_exceptions = reconciliation_summary.get(
+        "total_exceptions",
+        0,
+    )
+
+    human_review_count = sum(
+        1
+        for investigation in investigations
+        if investigation.get(
+            "requires_human_review",
+            False,
+        )
+    )
+
+    # ------------------------------------------------------------
+    # KPI CARDS
+    # ------------------------------------------------------------
+
+    metric_col1, metric_col2, metric_col3, metric_col4 = st.columns(4)
+
+    with metric_col1:
+        st.metric(
+            label="Transactions",
+            value=total_transactions,
+            help="Total financial transactions processed.",
+        )
+
+    with metric_col2:
+        st.metric(
+            label="Matched",
+            value=matched_transactions,
+            help="Transactions successfully reconciled.",
+        )
+
+    with metric_col3:
+        st.metric(
+            label="Exceptions",
+            value=total_exceptions,
+            help="Exceptions requiring investigation.",
+        )
+
+    with metric_col4:
+        st.metric(
+            label="Human Review",
+            value=human_review_count,
+            help="Items requiring human approval.",
+        )
+
+    st.divider()
+
+
+    # ============================================================
+    # CLOSE HEALTH
+    # ============================================================
+    
+    health_col1, health_col2 = st.columns([2, 1])
+    
+    with health_col1:
+
+        st.markdown("### Close Health")
+    
+        if total_exceptions == 0:
+    
+            st.success(
+                "✓ Close is ready for completion. "
+                "No reconciliation exceptions require attention."
+            )
+    
+        else:
+    
+            st.warning(
+                f"⚠ Close requires attention. "
+                f"{total_exceptions} exception(s) were identified."
+            )
+    
+    with health_col2:
+    
+        st.markdown("### Processing Status")
+    
+        if audit_result:
+    
+            st.success(
+                "Audit verification completed"
+            )
+    
+        else:
+    
+            st.info(
+                "Audit verification pending"
+            )
+    
+    st.divider()
+
+
+    # ============================================================
+    # AGENT WORKFLOW
+    # ============================================================
+    
+    st.markdown("### AI Agent Workflow")
+    
+    st.caption(
+        "ClosedLoop's autonomous month-end processing pipeline."
+    )
+    
+    agent_col1, agent_col2, agent_col3, agent_col4 = st.columns(4)
+    
+    with agent_col1:
+        st.success("✓ Ingestor")
+        st.caption("Data extraction")
+    
+    with agent_col2:
+        st.success("✓ Reconciler")
+        st.caption("Transaction matching")
+    
+    with agent_col3:
+        st.success("✓ Interrogator")
+        st.caption("Exception investigation")
+    
+    with agent_col4:
+        st.success("✓ Auditor")
+        st.caption("Control verification")
+    
+    st.divider()
 
     # ========================================================
     # CLOSE RUN
