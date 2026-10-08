@@ -1,601 +1,389 @@
 import streamlit as st
 
 
-def apply_custom_css():
+def apply_styles():
     st.markdown(
         """
         <style>
 
-        /* =========================================================
-           CLOSELOOP GLOBAL THEME
-           Theme-aware: works with Streamlit light and dark modes
-        ========================================================= */
+        /* =====================================================
+           CLOSELOOP DESIGN SYSTEM
+           ===================================================== */
 
         :root {
-            --cl-primary: #6366f1;
-            --cl-primary-hover: #4f46e5;
-            --cl-secondary: #8b5cf6;
+            --cl-bg-light: #eef2f7;
+            --cl-surface-light: #ffffff;
+            --cl-surface-soft-light: #f6f8fb;
+            --cl-border-light: #d9e0ea;
+            --cl-text-light: #172033;
+            --cl-muted-light: #5d687a;
 
-            --cl-success: #16a34a;
-            --cl-warning: #d97706;
-            --cl-danger: #dc2626;
-            --cl-info: #2563eb;
+            --cl-bg-dark: #0b1020;
+            --cl-surface-dark: #151c2f;
+            --cl-surface-soft-dark: #1b2438;
+            --cl-border-dark: #2d3850;
+            --cl-text-dark: #f4f7fb;
+            --cl-muted-dark: #aab4c5;
 
-            --cl-radius: 14px;
-            --cl-radius-small: 10px;
+            --cl-primary: #6657e8;
+            --cl-primary-dark: #8175ff;
+
+            --cl-success: #16845b;
+            --cl-warning: #b7791f;
+            --cl-danger: #c2414b;
         }
 
 
-        /* =========================================================
-           MAIN APPLICATION
-        ========================================================= */
+        /* =====================================================
+           MAIN APPLICATION BACKGROUND
+           ===================================================== */
 
         .stApp {
-            background: var(--background-color);
-            color: var(--text-color);
+            background:
+                radial-gradient(
+                    circle at 85% 5%,
+                    rgba(102, 87, 232, 0.10),
+                    transparent 28%
+                ),
+                radial-gradient(
+                    circle at 10% 90%,
+                    rgba(22, 132, 91, 0.07),
+                    transparent 25%
+                ),
+                var(--cl-bg-light);
+            color: var(--cl-text-light);
         }
+
+
+        /* =====================================================
+           MAIN CONTENT AREA
+           ===================================================== */
 
         .main .block-container {
-            padding-top: 2rem;
-            padding-bottom: 3rem;
             max-width: 1500px;
+            padding-top: 2rem;
+            padding-bottom: 4rem;
         }
 
 
-        /* =========================================================
-           GLOBAL TEXT
-        ========================================================= */
+        /* =====================================================
+           GENERAL TEXT — LIGHT MODE
+           ===================================================== */
 
         .stApp,
         .stApp p,
-        .stApp span,
         .stApp label,
-        .stApp div,
-        .stApp li {
-            color: var(--text-color);
+        .stApp span,
+        .stApp div {
+            color: var(--cl-text-light);
         }
 
         .stCaption,
-        small {
-            color: var(--secondary-text-color) !important;
-        }
-
-        h1, h2, h3, h4, h5, h6 {
-            color: var(--text-color) !important;
+        [data-testid="stCaptionContainer"] {
+            color: var(--cl-muted-light) !important;
         }
 
 
-        /* =========================================================
-           CLOSELOOP HEADINGS
-        ========================================================= */
+        /* =====================================================
+           HEADINGS
+           ===================================================== */
 
-        .cl-hero-title {
-            font-size: 2.8rem;
-            font-weight: 800;
-            letter-spacing: -0.04em;
-            color: var(--text-color);
-            margin-bottom: 0.15rem;
-        }
-
-        .cl-hero-subtitle {
-            font-size: 1.15rem;
-            font-weight: 500;
-            color: var(--secondary-text-color);
-            margin-bottom: 0.4rem;
-        }
-
-        .cl-hero-description {
-            font-size: 0.95rem;
-            color: var(--secondary-text-color);
-            margin-bottom: 1.5rem;
+        h1,
+        h2,
+        h3,
+        h4 {
+            color: var(--cl-text-light) !important;
+            letter-spacing: -0.02em;
         }
 
 
-        /* =========================================================
+        /* =====================================================
            SIDEBAR
-        ========================================================= */
+           ===================================================== */
 
         [data-testid="stSidebar"] {
-            background: var(--secondary-background-color);
-            border-right: 1px solid var(--border-color);
+            background:
+                linear-gradient(
+                    180deg,
+                    #e5e9f1 0%,
+                    #edf0f5 55%,
+                    #e7ebf2 100%
+                );
+            border-right: 1px solid var(--cl-border-light);
         }
 
         [data-testid="stSidebar"] * {
-            color: var(--text-color);
-        }
-
-        [data-testid="stSidebar"] h1,
-        [data-testid="stSidebar"] h2,
-        [data-testid="stSidebar"] h3 {
-            color: var(--text-color) !important;
+            color: var(--cl-text-light);
         }
 
 
-        /* =========================================================
+        /* =====================================================
            BUTTONS
-        ========================================================= */
+           ===================================================== */
 
         .stButton > button {
-            border-radius: var(--cl-radius-small);
-            border: 1px solid var(--border-color);
-            font-weight: 600;
-            min-height: 42px;
-            transition: all 0.2s ease;
+            border-radius: 10px;
+            min-height: 44px;
+            font-weight: 650;
+            border: 1px solid var(--cl-border-light);
+            background: var(--cl-surface-light);
+            color: var(--cl-text-light);
+            transition:
+                transform 0.15s ease,
+                box-shadow 0.15s ease,
+                border-color 0.15s ease;
         }
 
         .stButton > button:hover {
-            border-color: var(--cl-primary);
             transform: translateY(-1px);
+            border-color: var(--cl-primary);
+            box-shadow:
+                0 6px 18px rgba(37, 45, 70, 0.12);
         }
+
+
+        /* PRIMARY BUTTON */
 
         .stButton > button[kind="primary"] {
-            background: linear-gradient(
-                135deg,
-                var(--cl-primary),
-                var(--cl-secondary)
-            );
+            background:
+                linear-gradient(
+                    135deg,
+                    #6657e8,
+                    #7a68f2
+                );
             color: #ffffff !important;
             border: none;
-        }
-
-        .stButton > button[kind="primary"]:hover {
-            background: linear-gradient(
-                135deg,
-                var(--cl-primary-hover),
-                var(--cl-primary)
-            );
-            color: #ffffff !important;
+            box-shadow:
+                0 8px 20px rgba(102, 87, 232, 0.25);
         }
 
 
-        /* =========================================================
-           TEXT INPUTS / TEXT AREAS
-        ========================================================= */
-
-        .stTextInput input,
-        .stTextArea textarea,
-        .stDateInput input,
-        .stNumberInput input {
-            background: var(--background-color) !important;
-            color: var(--text-color) !important;
-            border: 1px solid var(--border-color) !important;
-            border-radius: var(--cl-radius-small) !important;
-        }
-
-        .stTextInput input::placeholder,
-        .stTextArea textarea::placeholder {
-            color: var(--secondary-text-color) !important;
-            opacity: 0.8;
-        }
-
-        .stTextInput input:focus,
-        .stTextArea textarea:focus,
-        .stDateInput input:focus,
-        .stNumberInput input:focus {
-            border-color: var(--cl-primary) !important;
-            box-shadow: 0 0 0 1px var(--cl-primary) !important;
-        }
-
-
-        /* =========================================================
-           SELECTBOX / MULTISELECT
-        ========================================================= */
-
-        [data-baseweb="select"] > div {
-            background: var(--background-color) !important;
-            color: var(--text-color) !important;
-            border-color: var(--border-color) !important;
-            border-radius: var(--cl-radius-small) !important;
-        }
-
-        [data-baseweb="select"] span {
-            color: var(--text-color) !important;
-        }
-
-        [role="option"] {
-            background: var(--background-color) !important;
-            color: var(--text-color) !important;
-        }
-
-        [role="option"]:hover {
-            background: var(--secondary-background-color) !important;
-        }
-
-
-        /* =========================================================
-           RADIO BUTTONS
-        ========================================================= */
-
-        [data-testid="stRadio"] label {
-            color: var(--text-color) !important;
-        }
-
-
-        /* =========================================================
-           FILE UPLOADER
-        ========================================================= */
-
-        [data-testid="stFileUploader"] {
-            background: var(--secondary-background-color);
-            border-radius: var(--cl-radius);
-        }
-
-        [data-testid="stFileUploaderDropzone"] {
-            background: var(--background-color) !important;
-            border: 1px dashed var(--border-color) !important;
-            border-radius: var(--cl-radius) !important;
-        }
-
-        [data-testid="stFileUploaderDropzone"] * {
-            color: var(--text-color) !important;
-        }
-
-        [data-testid="stFileUploaderDropzoneInstructions"] {
-            color: var(--secondary-text-color) !important;
-        }
-
-
-        /* =========================================================
+        /* =====================================================
            METRIC CARDS
-        ========================================================= */
+           ===================================================== */
 
         [data-testid="stMetric"] {
-            background: var(--secondary-background-color);
-            border: 1px solid var(--border-color);
-            border-radius: var(--cl-radius);
+            background: var(--cl-surface-light);
+            border: 1px solid var(--cl-border-light);
+            border-radius: 14px;
             padding: 1rem 1.1rem;
-            min-height: 110px;
+            box-shadow:
+                0 5px 18px rgba(34, 44, 67, 0.07);
         }
 
         [data-testid="stMetricLabel"] {
-            color: var(--secondary-text-color) !important;
+            color: var(--cl-muted-light) !important;
             font-weight: 600;
         }
 
         [data-testid="stMetricValue"] {
-            color: var(--text-color) !important;
+            color: var(--cl-text-light) !important;
             font-weight: 750;
         }
 
-        [data-testid="stMetricDelta"] {
-            color: var(--secondary-text-color) !important;
+
+        /* =====================================================
+           CONTAINERS / CARDS
+           ===================================================== */
+
+        [data-testid="stVerticalBlockBorderWrapper"] {
+            background: var(--cl-surface-light);
+            border: 1px solid var(--cl-border-light);
+            border-radius: 14px;
         }
 
 
-        /* =========================================================
-           EXPANDERS
-        ========================================================= */
+        /* =====================================================
+           INPUTS
+           ===================================================== */
 
-        [data-testid="stExpander"] {
-            border: 1px solid var(--border-color);
-            border-radius: var(--cl-radius);
-            background: var(--secondary-background-color);
-        }
-
-        [data-testid="stExpander"] summary {
-            color: var(--text-color) !important;
-            font-weight: 600;
-        }
-
-        [data-testid="stExpander"] summary:hover {
-            color: var(--cl-primary) !important;
+        .stTextInput input,
+        .stDateInput input,
+        .stNumberInput input {
+            background: var(--cl-surface-light) !important;
+            color: var(--cl-text-light) !important;
+            border: 1px solid var(--cl-border-light) !important;
+            border-radius: 9px !important;
         }
 
 
-        /* =========================================================
-           TABS
-        ========================================================= */
+        /* =====================================================
+           SELECTBOX / RADIO / FILE UPLOADER
+           ===================================================== */
 
-        .stTabs [data-baseweb="tab-list"] {
-            gap: 0.35rem;
-            border-bottom: 1px solid var(--border-color);
+        [data-baseweb="select"] > div {
+            background: var(--cl-surface-light);
+            border-color: var(--cl-border-light);
         }
 
-        .stTabs [data-baseweb="tab"] {
-            color: var(--secondary-text-color) !important;
-            font-weight: 600;
-            padding: 0.75rem 1rem;
-        }
-
-        .stTabs [aria-selected="true"] {
-            color: var(--cl-primary) !important;
+        [data-testid="stFileUploader"] {
+            background: var(--cl-surface-light);
+            border: 1px dashed var(--cl-border-light);
+            border-radius: 12px;
+            padding: 0.5rem;
         }
 
 
-        /* =========================================================
-           DATAFRAMES / TABLES
-        ========================================================= */
-
-        [data-testid="stDataFrame"] {
-            border: 1px solid var(--border-color);
-            border-radius: var(--cl-radius);
-            overflow: hidden;
-        }
-
-
-        /* =========================================================
+        /* =====================================================
            ALERTS
-        ========================================================= */
+           ===================================================== */
 
         [data-testid="stAlert"] {
-            border-radius: var(--cl-radius);
-        }
-
-        [data-testid="stAlert"] * {
-            color: var(--text-color);
+            border-radius: 12px;
         }
 
 
-        /* =========================================================
-           CUSTOM CLOSELOOP CARDS
-        ========================================================= */
+        /* =====================================================
+           EXPANDERS
+           ===================================================== */
 
-        .cl-card {
-            background: var(--secondary-background-color);
-            border: 1px solid var(--border-color);
-            border-radius: var(--cl-radius);
-            padding: 1.25rem;
-            margin-bottom: 1rem;
-        }
-
-        .cl-card-title {
-            color: var(--text-color);
-            font-size: 1rem;
-            font-weight: 700;
-            margin-bottom: 0.35rem;
-        }
-
-        .cl-card-text {
-            color: var(--secondary-text-color);
-            font-size: 0.9rem;
-            line-height: 1.5;
+        [data-testid="stExpander"] {
+            background: var(--cl-surface-light);
+            border: 1px solid var(--cl-border-light);
+            border-radius: 12px;
         }
 
 
-        /* =========================================================
-           STATUS BADGES
-        ========================================================= */
+        /* =====================================================
+           DATAFRAMES
+           ===================================================== */
 
-        .cl-badge {
-            display: inline-block;
-            padding: 0.3rem 0.7rem;
-            border-radius: 999px;
-            font-size: 0.78rem;
-            font-weight: 700;
-            letter-spacing: 0.01em;
-        }
-
-        .cl-badge-success {
-            background: rgba(22, 163, 74, 0.14);
-            color: var(--cl-success) !important;
-        }
-
-        .cl-badge-warning {
-            background: rgba(217, 119, 6, 0.14);
-            color: var(--cl-warning) !important;
-        }
-
-        .cl-badge-danger {
-            background: rgba(220, 38, 38, 0.14);
-            color: var(--cl-danger) !important;
-        }
-
-        .cl-badge-info {
-            background: rgba(37, 99, 235, 0.14);
-            color: var(--cl-info) !important;
+        [data-testid="stDataFrame"] {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--cl-border-light);
         }
 
 
-        /* =========================================================
+        /* =====================================================
            DIVIDERS
-        ========================================================= */
+           ===================================================== */
 
         hr {
-            border-color: var(--border-color) !important;
-            opacity: 0.7;
+            border-color: var(--cl-border-light) !important;
         }
 
 
-        /* =========================================================
-           DOWNLOAD BUTTON
-        ========================================================= */
+        /* =====================================================
+           DARK MODE
+           ===================================================== */
 
-        .stDownloadButton > button {
-            border-radius: var(--cl-radius-small);
-            font-weight: 700;
-            border: 1px solid var(--cl-primary);
-        }
+        @media (prefers-color-scheme: dark) {
 
-
-        /* =========================================================
-           SPINNER
-        ========================================================= */
-
-        [data-testid="stSpinner"] {
-            color: var(--cl-primary) !important;
-        }
-
-
-        /* =========================================================
-           MOBILE / SMALL SCREENS
-        ========================================================= */
-
-        @media (max-width: 768px) {
-
-            .main .block-container {
-                padding-left: 1rem;
-                padding-right: 1rem;
+            .stApp {
+                background:
+                    radial-gradient(
+                        circle at 85% 5%,
+                        rgba(102, 87, 232, 0.16),
+                        transparent 30%
+                    ),
+                    radial-gradient(
+                        circle at 5% 90%,
+                        rgba(22, 132, 91, 0.09),
+                        transparent 28%
+                    ),
+                    var(--cl-bg-dark);
+                color: var(--cl-text-dark);
             }
 
-            .cl-hero-title {
-                font-size: 2.1rem;
+            .stApp,
+            .stApp p,
+            .stApp label,
+            .stApp span,
+            .stApp div {
+                color: var(--cl-text-dark);
             }
 
-            .cl-hero-subtitle {
-                font-size: 1rem;
+            h1,
+            h2,
+            h3,
+            h4 {
+                color: var(--cl-text-dark) !important;
             }
 
-        }
-
-
-        /* =========================================================
-           CLOSELOOP BRAND HEADER
-        ========================================================= */
-
-        .cl-brand-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            padding: 1rem 1.25rem;
-
-            margin-bottom: 1.5rem;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    rgba(99, 102, 241, 0.10),
-                    rgba(139, 92, 246, 0.06)
-                );
-
-            border: 1px solid var(--border-color);
-
-            border-radius: 18px;
-        }
-
-
-        .cl-brand-left {
-            display: flex;
-            align-items: center;
-            gap: 0.85rem;
-        }
-
-
-        .cl-logo {
-            width: 48px;
-            height: 48px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            border-radius: 14px;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #6366f1,
-                    #8b5cf6
-                );
-
-            color: #ffffff !important;
-
-            font-size: 1rem;
-            font-weight: 800;
-
-            box-shadow:
-                0 8px 24px rgba(99, 102, 241, 0.25);
-        }
-
-
-        .cl-brand-name {
-            color: var(--text-color) !important;
-
-            font-size: 1.35rem;
-            font-weight: 800;
-
-            line-height: 1.1;
-        }
-
-
-        .cl-brand-tagline {
-            color: var(--secondary-text-color) !important;
-
-            font-size: 0.78rem;
-            font-weight: 500;
-
-            margin-top: 0.2rem;
-        }
-
-
-        .cl-system-status {
-            display: flex;
-            align-items: center;
-            gap: 0.45rem;
-
-            padding: 0.45rem 0.75rem;
-
-            border-radius: 999px;
-
-            background: var(--background-color);
-
-            border: 1px solid var(--border-color);
-
-            color: var(--secondary-text-color) !important;
-
-            font-size: 0.78rem;
-            font-weight: 600;
-        }
-
-
-        .cl-status-dot {
-            width: 8px;
-            height: 8px;
-
-            border-radius: 50%;
-
-            background: #16a34a;
-
-            box-shadow:
-                0 0 0 4px rgba(22, 163, 74, 0.12);
-        }
-
-
-        .cl-page-intro {
-            margin-bottom: 1.75rem;
-        }
-
-
-        .cl-page-intro h1 {
-            margin: 0;
-
-            color: var(--text-color) !important;
-
-            font-size: 2.35rem;
-            font-weight: 800;
-
-            letter-spacing: -0.035em;
-        }
-
-
-        .cl-page-intro p {
-            margin-top: 0.45rem;
-
-            max-width: 780px;
-
-            color: var(--secondary-text-color) !important;
-
-            font-size: 0.98rem;
-            line-height: 1.6;
-        }
-
-
-        @media (max-width: 768px) {
-
-            .cl-brand-header {
-                align-items: flex-start;
-                gap: 1rem;
+            .stCaption,
+            [data-testid="stCaptionContainer"] {
+                color: var(--cl-muted-dark) !important;
             }
 
-            .cl-system-status {
-                display: none;
+            [data-testid="stSidebar"] {
+                background:
+                    linear-gradient(
+                        180deg,
+                        #101729 0%,
+                        #0d1424 100%
+                    );
+                border-right: 1px solid var(--cl-border-dark);
             }
 
-            .cl-page-intro h1 {
-                font-size: 1.8rem;
+            [data-testid="stSidebar"] * {
+                color: var(--cl-text-dark);
+            }
+
+            .stButton > button {
+                background: var(--cl-surface-dark);
+                color: var(--cl-text-dark);
+                border-color: var(--cl-border-dark);
+            }
+
+            .stButton > button:hover {
+                border-color: var(--cl-primary-dark);
+                box-shadow:
+                    0 6px 20px rgba(0, 0, 0, 0.25);
+            }
+
+            [data-testid="stMetric"] {
+                background: var(--cl-surface-dark);
+                border-color: var(--cl-border-dark);
+                box-shadow:
+                    0 8px 24px rgba(0, 0, 0, 0.20);
+            }
+
+            [data-testid="stMetricLabel"] {
+                color: var(--cl-muted-dark) !important;
+            }
+
+            [data-testid="stMetricValue"] {
+                color: var(--cl-text-dark) !important;
+            }
+
+            [data-testid="stVerticalBlockBorderWrapper"] {
+                background: var(--cl-surface-dark);
+                border-color: var(--cl-border-dark);
+            }
+
+            .stTextInput input,
+            .stDateInput input,
+            .stNumberInput input {
+                background: var(--cl-surface-dark) !important;
+                color: var(--cl-text-dark) !important;
+                border-color: var(--cl-border-dark) !important;
+            }
+
+            [data-baseweb="select"] > div {
+                background: var(--cl-surface-dark);
+                border-color: var(--cl-border-dark);
+            }
+
+            [data-testid="stFileUploader"] {
+                background: var(--cl-surface-dark);
+                border-color: var(--cl-border-dark);
+            }
+
+            [data-testid="stExpander"] {
+                background: var(--cl-surface-dark);
+                border-color: var(--cl-border-dark);
+            }
+
+            [data-testid="stDataFrame"] {
+                border-color: var(--cl-border-dark);
+            }
+
+            hr {
+                border-color: var(--cl-border-dark) !important;
             }
         }
-        
+
         </style>
         """,
         unsafe_allow_html=True,
