@@ -6,27 +6,31 @@ def apply_styles():
         """
         <style>
 
-        /* =====================================================
-           CLOSELOOP DESIGN SYSTEM
-           ===================================================== */
+        /* =========================================================
+           CLOSELOOP DESIGN TOKENS
+           ========================================================= */
 
         :root {
-            --cl-bg-light: #eef2f7;
-            --cl-surface-light: #ffffff;
-            --cl-surface-soft-light: #f6f8fb;
-            --cl-border-light: #d9e0ea;
-            --cl-text-light: #172033;
-            --cl-muted-light: #5d687a;
+            --cl-primary: #6557e8;
+            --cl-primary-hover: #5547d5;
 
-            --cl-bg-dark: #0b1020;
-            --cl-surface-dark: #151c2f;
-            --cl-surface-soft-dark: #1b2438;
-            --cl-border-dark: #2d3850;
-            --cl-text-dark: #f4f7fb;
-            --cl-muted-dark: #aab4c5;
+            --cl-light-bg: #e9eef6;
+            --cl-light-bg-2: #f3f6fa;
+            --cl-light-surface: #ffffff;
+            --cl-light-surface-2: #f7f9fc;
+            --cl-light-border: #d6deea;
 
-            --cl-primary: #6657e8;
-            --cl-primary-dark: #8175ff;
+            --cl-light-text: #172033;
+            --cl-light-muted: #5d687a;
+
+            --cl-dark-bg: #080d19;
+            --cl-dark-bg-2: #0e1525;
+            --cl-dark-surface: #151e31;
+            --cl-dark-surface-2: #1b263b;
+            --cl-dark-border: #303d55;
+
+            --cl-dark-text: #f5f7fb;
+            --cl-dark-muted: #aeb8c9;
 
             --cl-success: #16845b;
             --cl-warning: #b7791f;
@@ -34,30 +38,63 @@ def apply_styles():
         }
 
 
-        /* =====================================================
-           MAIN APPLICATION BACKGROUND
-           ===================================================== */
+        /* =========================================================
+           LIGHT MODE
+           ========================================================= */
 
-        .stApp {
+        html[data-theme="light"] .stApp,
+        [data-theme="light"] .stApp {
             background:
                 radial-gradient(
-                    circle at 85% 5%,
-                    rgba(102, 87, 232, 0.10),
+                    circle at 88% 4%,
+                    rgba(101, 87, 232, 0.13),
                     transparent 28%
                 ),
                 radial-gradient(
-                    circle at 10% 90%,
-                    rgba(22, 132, 91, 0.07),
+                    circle at 8% 90%,
+                    rgba(22, 132, 91, 0.08),
                     transparent 25%
                 ),
-                var(--cl-bg-light);
-            color: var(--cl-text-light);
+                linear-gradient(
+                    135deg,
+                    var(--cl-light-bg),
+                    var(--cl-light-bg-2)
+                ) !important;
+
+            color: var(--cl-light-text) !important;
         }
 
 
-        /* =====================================================
-           MAIN CONTENT AREA
-           ===================================================== */
+        /* =========================================================
+           DARK MODE
+           ========================================================= */
+
+        html[data-theme="dark"] .stApp,
+        [data-theme="dark"] .stApp {
+            background:
+                radial-gradient(
+                    circle at 88% 4%,
+                    rgba(101, 87, 232, 0.20),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 8% 90%,
+                    rgba(22, 132, 91, 0.10),
+                    transparent 28%
+                ),
+                linear-gradient(
+                    135deg,
+                    var(--cl-dark-bg),
+                    var(--cl-dark-bg-2)
+                ) !important;
+
+            color: var(--cl-dark-text) !important;
+        }
+
+
+        /* =========================================================
+           MAIN CONTENT
+           ========================================================= */
 
         .main .block-container {
             max-width: 1500px;
@@ -66,322 +103,385 @@ def apply_styles():
         }
 
 
-        /* =====================================================
-           GENERAL TEXT — LIGHT MODE
-           ===================================================== */
+        /* =========================================================
+           LIGHT MODE TEXT
+           ========================================================= */
 
-        .stApp,
-        .stApp p,
-        .stApp label,
-        .stApp span,
-        .stApp div {
-            color: var(--cl-text-light);
+        html[data-theme="light"] .stApp p,
+        html[data-theme="light"] .stApp label,
+        html[data-theme="light"] .stApp span,
+        html[data-theme="light"] .stApp div {
+            color: var(--cl-light-text);
         }
 
-        .stCaption,
-        [data-testid="stCaptionContainer"] {
-            color: var(--cl-muted-light) !important;
-        }
-
-
-        /* =====================================================
-           HEADINGS
-           ===================================================== */
-
-        h1,
-        h2,
-        h3,
-        h4 {
-            color: var(--cl-text-light) !important;
-            letter-spacing: -0.02em;
+        html[data-theme="light"] h1,
+        html[data-theme="light"] h2,
+        html[data-theme="light"] h3,
+        html[data-theme="light"] h4 {
+            color: var(--cl-light-text) !important;
         }
 
 
-        /* =====================================================
-           SIDEBAR
-           ===================================================== */
+        /* =========================================================
+           DARK MODE TEXT
+           ========================================================= */
 
-        [data-testid="stSidebar"] {
+        html[data-theme="dark"] .stApp p,
+        html[data-theme="dark"] .stApp label,
+        html[data-theme="dark"] .stApp span,
+        html[data-theme="dark"] .stApp div {
+            color: var(--cl-dark-text);
+        }
+
+        html[data-theme="dark"] h1,
+        html[data-theme="dark"] h2,
+        html[data-theme="dark"] h3,
+        html[data-theme="dark"] h4 {
+            color: var(--cl-dark-text) !important;
+        }
+
+
+        /* =========================================================
+           SIDEBAR — LIGHT
+           ========================================================= */
+
+        html[data-theme="light"] [data-testid="stSidebar"] {
             background:
                 linear-gradient(
                     180deg,
-                    #e5e9f1 0%,
-                    #edf0f5 55%,
-                    #e7ebf2 100%
-                );
-            border-right: 1px solid var(--cl-border-light);
+                    #dde5f1 0%,
+                    #e8edf5 55%,
+                    #e1e7f0 100%
+                ) !important;
+
+            border-right: 1px solid var(--cl-light-border);
         }
 
-        [data-testid="stSidebar"] * {
-            color: var(--cl-text-light);
+        html[data-theme="light"] [data-testid="stSidebar"] * {
+            color: var(--cl-light-text);
         }
 
 
-        /* =====================================================
-           BUTTONS
-           ===================================================== */
+        /* =========================================================
+           SIDEBAR — DARK
+           ========================================================= */
 
-        .stButton > button {
-            border-radius: 10px;
-            min-height: 44px;
-            font-weight: 650;
-            border: 1px solid var(--cl-border-light);
-            background: var(--cl-surface-light);
-            color: var(--cl-text-light);
-            transition:
-                transform 0.15s ease,
-                box-shadow 0.15s ease,
-                border-color 0.15s ease;
+        html[data-theme="dark"] [data-testid="stSidebar"] {
+            background:
+                linear-gradient(
+                    180deg,
+                    #0b1221 0%,
+                    #0e1628 55%,
+                    #0a111f 100%
+                ) !important;
+
+            border-right: 1px solid var(--cl-dark-border);
         }
 
-        .stButton > button:hover {
-            transform: translateY(-1px);
-            border-color: var(--cl-primary);
+        html[data-theme="dark"] [data-testid="stSidebar"] * {
+            color: var(--cl-dark-text);
+        }
+
+
+        /* =========================================================
+           METRIC CARDS — LIGHT
+           ========================================================= */
+
+        html[data-theme="light"] [data-testid="stMetric"] {
+            background: var(--cl-light-surface) !important;
+            border: 1px solid var(--cl-light-border) !important;
+            border-radius: 14px;
+            padding: 1rem 1.1rem;
+
             box-shadow:
-                0 6px 18px rgba(37, 45, 70, 0.12);
+                0 7px 22px rgba(31, 45, 68, 0.08);
+        }
+
+        html[data-theme="light"] [data-testid="stMetricLabel"] {
+            color: var(--cl-light-muted) !important;
+        }
+
+        html[data-theme="light"] [data-testid="stMetricValue"] {
+            color: var(--cl-light-text) !important;
         }
 
 
-        /* PRIMARY BUTTON */
+        /* =========================================================
+           METRIC CARDS — DARK
+           ========================================================= */
+
+        html[data-theme="dark"] [data-testid="stMetric"] {
+            background: var(--cl-dark-surface) !important;
+            border: 1px solid var(--cl-dark-border) !important;
+            border-radius: 14px;
+            padding: 1rem 1.1rem;
+
+            box-shadow:
+                0 10px 28px rgba(0, 0, 0, 0.25);
+        }
+
+        html[data-theme="dark"] [data-testid="stMetricLabel"] {
+            color: var(--cl-dark-muted) !important;
+        }
+
+        html[data-theme="dark"] [data-testid="stMetricValue"] {
+            color: var(--cl-dark-text) !important;
+        }
+
+
+        /* =========================================================
+           INPUTS — LIGHT
+           ========================================================= */
+
+        html[data-theme="light"] input,
+        html[data-theme="light"] textarea {
+            background: var(--cl-light-surface) !important;
+            color: var(--cl-light-text) !important;
+            border-color: var(--cl-light-border) !important;
+        }
+
+
+        /* =========================================================
+           INPUTS — DARK
+           ========================================================= */
+
+        html[data-theme="dark"] input,
+        html[data-theme="dark"] textarea {
+            background: var(--cl-dark-surface) !important;
+            color: var(--cl-dark-text) !important;
+            border-color: var(--cl-dark-border) !important;
+            caret-color: var(--cl-dark-text) !important;
+        }
+
+
+        /* =========================================================
+           INPUT PLACEHOLDERS
+           ========================================================= */
+
+        html[data-theme="light"] input::placeholder,
+        html[data-theme="light"] textarea::placeholder {
+            color: #7b8798 !important;
+        }
+
+        html[data-theme="dark"] input::placeholder,
+        html[data-theme="dark"] textarea::placeholder {
+            color: #8995a9 !important;
+        }
+
+
+        /* =========================================================
+           SELECTBOX — LIGHT
+           ========================================================= */
+
+        html[data-theme="light"] [data-baseweb="select"] > div {
+            background: var(--cl-light-surface) !important;
+            color: var(--cl-light-text) !important;
+            border-color: var(--cl-light-border) !important;
+        }
+
+
+        /* =========================================================
+           SELECTBOX — DARK
+           ========================================================= */
+
+        html[data-theme="dark"] [data-baseweb="select"] > div {
+            background: var(--cl-dark-surface) !important;
+            color: var(--cl-dark-text) !important;
+            border-color: var(--cl-dark-border) !important;
+        }
+
+
+        /* =========================================================
+           DATE INPUT ICONS / TEXT
+           ========================================================= */
+
+        html[data-theme="dark"] [data-testid="stDateInput"] svg {
+            color: var(--cl-dark-muted) !important;
+        }
+
+        html[data-theme="light"] [data-testid="stDateInput"] svg {
+            color: var(--cl-light-muted) !important;
+        }
+
+
+        /* =========================================================
+           FILE UPLOADER — LIGHT
+           ========================================================= */
+
+        html[data-theme="light"] [data-testid="stFileUploader"] {
+            background: var(--cl-light-surface) !important;
+            border: 1px dashed var(--cl-light-border) !important;
+            border-radius: 12px;
+        }
+
+
+        /* =========================================================
+           FILE UPLOADER — DARK
+           ========================================================= */
+
+        html[data-theme="dark"] [data-testid="stFileUploader"] {
+            background: var(--cl-dark-surface) !important;
+            border: 1px dashed var(--cl-dark-border) !important;
+            border-radius: 12px;
+        }
+
+
+        /* =========================================================
+           BUTTONS — LIGHT
+           ========================================================= */
+
+        html[data-theme="light"] .stButton > button {
+            background: var(--cl-light-surface) !important;
+            color: var(--cl-light-text) !important;
+            border: 1px solid var(--cl-light-border) !important;
+            border-radius: 10px;
+            font-weight: 650;
+        }
+
+
+        /* =========================================================
+           BUTTONS — DARK
+           ========================================================= */
+
+        html[data-theme="dark"] .stButton > button {
+            background: var(--cl-dark-surface) !important;
+            color: var(--cl-dark-text) !important;
+            border: 1px solid var(--cl-dark-border) !important;
+            border-radius: 10px;
+            font-weight: 650;
+        }
+
+
+        /* =========================================================
+           PRIMARY BUTTON
+           ========================================================= */
 
         .stButton > button[kind="primary"] {
             background:
                 linear-gradient(
                     135deg,
-                    #6657e8,
-                    #7a68f2
-                );
+                    #6557e8,
+                    #7b6bf1
+                ) !important;
+
             color: #ffffff !important;
-            border: none;
+            border: none !important;
+
             box-shadow:
-                0 8px 20px rgba(102, 87, 232, 0.25);
+                0 8px 22px rgba(101, 87, 232, 0.25);
         }
 
 
-        /* =====================================================
-           METRIC CARDS
-           ===================================================== */
+        /* =========================================================
+           DOWNLOAD BUTTON — LIGHT
+           ========================================================= */
 
-        [data-testid="stMetric"] {
-            background: var(--cl-surface-light);
-            border: 1px solid var(--cl-border-light);
-            border-radius: 14px;
-            padding: 1rem 1.1rem;
-            box-shadow:
-                0 5px 18px rgba(34, 44, 67, 0.07);
-        }
-
-        [data-testid="stMetricLabel"] {
-            color: var(--cl-muted-light) !important;
-            font-weight: 600;
-        }
-
-        [data-testid="stMetricValue"] {
-            color: var(--cl-text-light) !important;
-            font-weight: 750;
+        html[data-theme="light"] .stDownloadButton > button {
+            background: var(--cl-light-surface) !important;
+            color: var(--cl-light-text) !important;
+            border: 1px solid var(--cl-light-border) !important;
         }
 
 
-        /* =====================================================
-           CONTAINERS / CARDS
-           ===================================================== */
+        /* =========================================================
+           DOWNLOAD BUTTON — DARK
+           ========================================================= */
 
+        html[data-theme="dark"] .stDownloadButton > button {
+            background: var(--cl-dark-surface) !important;
+            color: var(--cl-dark-text) !important;
+            border: 1px solid var(--cl-dark-border) !important;
+        }
+
+
+        /* =========================================================
+           CARDS / BORDERED CONTAINERS — LIGHT
+           ========================================================= */
+
+        html[data-theme="light"]
         [data-testid="stVerticalBlockBorderWrapper"] {
-            background: var(--cl-surface-light);
-            border: 1px solid var(--cl-border-light);
+            background: var(--cl-light-surface) !important;
+            border: 1px solid var(--cl-light-border) !important;
             border-radius: 14px;
+            box-shadow:
+                0 6px 20px rgba(31, 45, 68, 0.06);
         }
 
 
-        /* =====================================================
-           INPUTS
-           ===================================================== */
+        /* =========================================================
+           CARDS / BORDERED CONTAINERS — DARK
+           ========================================================= */
 
-        .stTextInput input,
-        .stDateInput input,
-        .stNumberInput input {
-            background: var(--cl-surface-light) !important;
-            color: var(--cl-text-light) !important;
-            border: 1px solid var(--cl-border-light) !important;
-            border-radius: 9px !important;
+        html[data-theme="dark"]
+        [data-testid="stVerticalBlockBorderWrapper"] {
+            background: var(--cl-dark-surface) !important;
+            border: 1px solid var(--cl-dark-border) !important;
+            border-radius: 14px;
+            box-shadow:
+                0 10px 26px rgba(0, 0, 0, 0.22);
         }
 
 
-        /* =====================================================
-           SELECTBOX / RADIO / FILE UPLOADER
-           ===================================================== */
+        /* =========================================================
+           EXPANDERS
+           ========================================================= */
 
-        [data-baseweb="select"] > div {
-            background: var(--cl-surface-light);
-            border-color: var(--cl-border-light);
+        html[data-theme="light"] [data-testid="stExpander"] {
+            background: var(--cl-light-surface) !important;
+            border-color: var(--cl-light-border) !important;
         }
 
-        [data-testid="stFileUploader"] {
-            background: var(--cl-surface-light);
-            border: 1px dashed var(--cl-border-light);
+        html[data-theme="dark"] [data-testid="stExpander"] {
+            background: var(--cl-dark-surface) !important;
+            border-color: var(--cl-dark-border) !important;
+        }
+
+
+        /* =========================================================
+           DATAFRAME CONTAINER
+           ========================================================= */
+
+        html[data-theme="light"] [data-testid="stDataFrame"] {
+            border: 1px solid var(--cl-light-border);
             border-radius: 12px;
-            padding: 0.5rem;
+        }
+
+        html[data-theme="dark"] [data-testid="stDataFrame"] {
+            border: 1px solid var(--cl-dark-border);
+            border-radius: 12px;
         }
 
 
-        /* =====================================================
+        /* =========================================================
+           DIVIDERS
+           ========================================================= */
+
+        html[data-theme="light"] hr {
+            border-color: var(--cl-light-border) !important;
+        }
+
+        html[data-theme="dark"] hr {
+            border-color: var(--cl-dark-border) !important;
+        }
+
+
+        /* =========================================================
            ALERTS
-           ===================================================== */
+           ========================================================= */
 
         [data-testid="stAlert"] {
             border-radius: 12px;
         }
 
 
-        /* =====================================================
-           EXPANDERS
-           ===================================================== */
+        /* =========================================================
+           FOCUS STATES
+           ========================================================= */
 
-        [data-testid="stExpander"] {
-            background: var(--cl-surface-light);
-            border: 1px solid var(--cl-border-light);
-            border-radius: 12px;
-        }
-
-
-        /* =====================================================
-           DATAFRAMES
-           ===================================================== */
-
-        [data-testid="stDataFrame"] {
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid var(--cl-border-light);
-        }
-
-
-        /* =====================================================
-           DIVIDERS
-           ===================================================== */
-
-        hr {
-            border-color: var(--cl-border-light) !important;
-        }
-
-
-        /* =====================================================
-           DARK MODE
-           ===================================================== */
-
-        @media (prefers-color-scheme: dark) {
-
-            .stApp {
-                background:
-                    radial-gradient(
-                        circle at 85% 5%,
-                        rgba(102, 87, 232, 0.16),
-                        transparent 30%
-                    ),
-                    radial-gradient(
-                        circle at 5% 90%,
-                        rgba(22, 132, 91, 0.09),
-                        transparent 28%
-                    ),
-                    var(--cl-bg-dark);
-                color: var(--cl-text-dark);
-            }
-
-            .stApp,
-            .stApp p,
-            .stApp label,
-            .stApp span,
-            .stApp div {
-                color: var(--cl-text-dark);
-            }
-
-            h1,
-            h2,
-            h3,
-            h4 {
-                color: var(--cl-text-dark) !important;
-            }
-
-            .stCaption,
-            [data-testid="stCaptionContainer"] {
-                color: var(--cl-muted-dark) !important;
-            }
-
-            [data-testid="stSidebar"] {
-                background:
-                    linear-gradient(
-                        180deg,
-                        #101729 0%,
-                        #0d1424 100%
-                    );
-                border-right: 1px solid var(--cl-border-dark);
-            }
-
-            [data-testid="stSidebar"] * {
-                color: var(--cl-text-dark);
-            }
-
-            .stButton > button {
-                background: var(--cl-surface-dark);
-                color: var(--cl-text-dark);
-                border-color: var(--cl-border-dark);
-            }
-
-            .stButton > button:hover {
-                border-color: var(--cl-primary-dark);
-                box-shadow:
-                    0 6px 20px rgba(0, 0, 0, 0.25);
-            }
-
-            [data-testid="stMetric"] {
-                background: var(--cl-surface-dark);
-                border-color: var(--cl-border-dark);
-                box-shadow:
-                    0 8px 24px rgba(0, 0, 0, 0.20);
-            }
-
-            [data-testid="stMetricLabel"] {
-                color: var(--cl-muted-dark) !important;
-            }
-
-            [data-testid="stMetricValue"] {
-                color: var(--cl-text-dark) !important;
-            }
-
-            [data-testid="stVerticalBlockBorderWrapper"] {
-                background: var(--cl-surface-dark);
-                border-color: var(--cl-border-dark);
-            }
-
-            .stTextInput input,
-            .stDateInput input,
-            .stNumberInput input {
-                background: var(--cl-surface-dark) !important;
-                color: var(--cl-text-dark) !important;
-                border-color: var(--cl-border-dark) !important;
-            }
-
-            [data-baseweb="select"] > div {
-                background: var(--cl-surface-dark);
-                border-color: var(--cl-border-dark);
-            }
-
-            [data-testid="stFileUploader"] {
-                background: var(--cl-surface-dark);
-                border-color: var(--cl-border-dark);
-            }
-
-            [data-testid="stExpander"] {
-                background: var(--cl-surface-dark);
-                border-color: var(--cl-border-dark);
-            }
-
-            [data-testid="stDataFrame"] {
-                border-color: var(--cl-border-dark);
-            }
-
-            hr {
-                border-color: var(--cl-border-dark) !important;
-            }
+        input:focus,
+        textarea:focus,
+        button:focus {
+            outline: none !important;
         }
 
         </style>
