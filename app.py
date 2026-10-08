@@ -86,26 +86,7 @@ with st.sidebar:
     # --------------------------------------------------------
 
     st.markdown("## ClosedLoop")
-
-    st.caption(
-        "Autonomous Month-End Closer"
-    )
-
-    st.divider()
-
-    # --------------------------------------------------------
-    # WORKSPACE
-    # --------------------------------------------------------
-
-    st.caption("WORKSPACE")
-
-    st.markdown("**◉  Close Overview**")
-    st.markdown("**↔  Reconciliation**")
-    st.markdown("**⚠  Exceptions**")
-    st.markdown("**✦  AI Investigations**")
-    st.markdown("**✓  Audit & Controls**")
-    st.markdown("**👤  Human Review**")
-    st.markdown("**↓  Reports**")
+    st.caption("Autonomous Month-End Closer")
 
     st.divider()
 
@@ -122,16 +103,12 @@ with st.sidebar:
 
     period_start = st.date_input(
         "Period Start",
-        value=pd.to_datetime(
-            "2026-08-01"
-        ).date(),
+        value=pd.Timestamp("2026-08-01"),
     )
 
     period_end = st.date_input(
         "Period End",
-        value=pd.to_datetime(
-            "2026-08-31"
-        ).date(),
+        value=pd.Timestamp("2026-08-31"),
     )
 
     st.divider()
@@ -158,6 +135,42 @@ with st.sidebar:
         use_container_width=True,
         disabled=st.session_state.running,
     )
+
+    st.divider()
+
+    # --------------------------------------------------------
+    # WORKSPACE
+    # --------------------------------------------------------
+
+    workspace_ready = (
+        st.session_state.close_result is not None
+    )
+
+    st.caption("WORKSPACE")
+
+    if workspace_ready:
+
+        st.markdown("**●  Close Overview**")
+        st.markdown("**↔  Reconciliation**")
+        st.markdown("**⚠  Exceptions**")
+        st.markdown("**✦  AI Investigations**")
+        st.markdown("**✓  Audit & Controls**")
+        st.markdown("**👤  Human Review**")
+        st.markdown("**↓  Reports**")
+
+    else:
+
+        st.markdown("🔒 Close Overview")
+        st.markdown("🔒 Reconciliation")
+        st.markdown("🔒 Exceptions")
+        st.markdown("🔒 AI Investigations")
+        st.markdown("🔒 Audit & Controls")
+        st.markdown("🔒 Human Review")
+        st.markdown("🔒 Reports")
+
+        st.caption(
+            "Run a month-end close to unlock the workspace."
+        )
 
 
 # ============================================================
