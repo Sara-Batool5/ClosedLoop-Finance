@@ -1,9 +1,9 @@
 import streamlit as st
 import pandas as pd
 
-#from styles import apply_styles
+from styles import apply_styles
 
-from styles import apply_custom_css
+#from styles import apply_custom_css
 
 from workflow.graph import run_close
 from reports.report_generator import generate_audit_report
@@ -28,8 +28,8 @@ st.set_page_config(
 )
 
 # Apply ClosedLoop design system
-#apply_styles()
-apply_custom_css()
+apply_styles()
+#apply_custom_css()
 
 
 # ============================================================
