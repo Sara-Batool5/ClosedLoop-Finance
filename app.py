@@ -369,10 +369,7 @@ if run_button:
                                 )
 
                             st.session_state.close_result = result
-
-                            st.success(
-                                "✓ Month-end close workflow completed."
-                            )
+                            st.rerun()
 
                         except Exception as exc:
                             st.error(
@@ -443,10 +440,7 @@ if run_button:
                     )
 
                 st.session_state.close_result = result
-
-                st.success(
-                    "✓ Month-end close workflow completed."
-                )
+                st.rerun()
 
             except Exception as exc:
                 st.error(
