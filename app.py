@@ -150,13 +150,13 @@ with st.sidebar:
 
     if workspace_ready:
 
-        st.markdown("**●  Close Overview**")
-        st.markdown("**↔  Reconciliation**")
-        st.markdown("**⚠  Exceptions**")
-        st.markdown("**✦  AI Investigations**")
-        st.markdown("**✓  Audit & Controls**")
-        st.markdown("**👤  Human Review**")
-        st.markdown("**↓  Reports**")
+        st.markdown("[●  Close Overview](#close-overview)")
+        st.markdown("[↔  Reconciliation](#reconciliation)")
+        st.markdown("[⚠  Exceptions](#exceptions)")
+        st.markdown("[✦  AI Investigations](#ai-investigations)")
+        st.markdown("[✓  Audit & Controls](#audit-verification)")
+        st.markdown("[👤  Human Review](#human-review)")
+        st.markdown("[↓  Reports](#download-audit-report)")
 
     else:
 
