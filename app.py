@@ -152,11 +152,19 @@ with st.sidebar:
 
         st.markdown("[●  Close Overview](#close-overview)")
         st.markdown("[↔  Reconciliation](#reconciliation)")
-        st.markdown("[⚠  Exceptions](#exceptions)")
-        st.markdown("[✦  AI Investigations](#ai-investigations)")
+        st.markdown(
+            "[⚠  Exceptions](#exceptions-requiring-attention)"
+        )
+        st.markdown(
+            "[✦  AI Investigations](#ai-exception-investigations)"
+        )
         st.markdown("[✓  Audit & Controls](#audit-verification)")
-        st.markdown("[👤  Human Review](#human-review)")
-        st.markdown("[↓  Reports](#download-audit-report)")
+        st.markdown(
+            "[👤  Human Review](#human-review-approval)"
+        )
+        st.markdown(
+            "[↓  Reports](#final-audit-report)"
+        )
 
     else:
 
