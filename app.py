@@ -159,9 +159,7 @@ with st.sidebar:
             "[✦  AI Investigations](#ai-exception-investigations)"
         )
         st.markdown("[✓  Audit & Controls](#audit-verification)")
-        st.markdown(
-            "[👤  Human Review](#human-review-approval)"
-        )
+        st.markdown("[👤  Human Review](#human-review)")
         st.markdown(
             "[↓  Reports](#final-audit-report)"
         )
@@ -1679,6 +1677,8 @@ else:
     # ============================================================
 
     st.divider()
+
+    st.markdown('<div id="human-review"></div>', unsafe_allow_html=True)
 
     st.subheader("👤 Human Review & Approval")
 
