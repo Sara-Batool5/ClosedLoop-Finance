@@ -183,43 +183,29 @@ def apply_styles():
         }
 
 
-        
         /* =========================================================
            KPI CARDS — LIGHT MODE
            ========================================================= */
         
         html[data-theme="light"] [data-testid="stMetric"] {
-            background: linear-gradient(
-                145deg,
-                #ffffff 0%,
-                #f4f6ff 100%
-            ) !important;
-            border: 1px solid #dce2f3 !important;
-            border-radius: 16px !important;
-            padding: 1.2rem 1.25rem !important;
-            box-shadow: 0 8px 24px rgba(40, 50, 90, 0.08);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            background: #eef2ff !important;
+            border: 1px solid #c7d2fe !important;
+            border-left: 5px solid #6557e8 !important;
+            border-radius: 14px !important;
+            padding: 20px 22px !important;
+            box-shadow: 0 5px 16px rgba(48, 55, 110, 0.10) !important;
         }
         
-        html[data-theme="light"] [data-testid="stMetric"]:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 28px rgba(40, 50, 90, 0.13);
-        }
-        
-        html[data-theme="light"] [data-testid="stMetricLabel"] {
-            color: #596780 !important;
-            font-size: 0.88rem !important;
+        html[data-theme="light"] [data-testid="stMetricLabel"],
+        html[data-theme="light"] [data-testid="stMetricLabel"] p {
+            color: #475569 !important;
             font-weight: 600 !important;
         }
         
-        html[data-theme="light"] [data-testid="stMetricValue"] {
-            color: #202b48 !important;
-            font-size: 2rem !important;
+        html[data-theme="light"] [data-testid="stMetricValue"],
+        html[data-theme="light"] [data-testid="stMetricValue"] div {
+            color: #24245b !important;
             font-weight: 750 !important;
-        }
-        
-        html[data-theme="light"] [data-testid="stMetricDelta"] {
-            font-weight: 600 !important;
         }
         
         
@@ -228,37 +214,24 @@ def apply_styles():
            ========================================================= */
         
         html[data-theme="dark"] [data-testid="stMetric"] {
-            background: linear-gradient(
-                145deg,
-                #19243a 0%,
-                #121b2d 100%
-            ) !important;
-            border: 1px solid #35435f !important;
-            border-radius: 16px !important;
-            padding: 1.2rem 1.25rem !important;
-            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            background: #1b2540 !important;
+            border: 1px solid #3b4a70 !important;
+            border-left: 5px solid #9385ff !important;
+            border-radius: 14px !important;
+            padding: 20px 22px !important;
+            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.22) !important;
         }
         
-        html[data-theme="dark"] [data-testid="stMetric"]:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 14px 32px rgba(0, 0, 0, 0.32);
-        }
-        
-        html[data-theme="dark"] [data-testid="stMetricLabel"] {
-            color: #b7c3d8 !important;
-            font-size: 0.88rem !important;
+        html[data-theme="dark"] [data-testid="stMetricLabel"],
+        html[data-theme="dark"] [data-testid="stMetricLabel"] p {
+            color: #c4cee0 !important;
             font-weight: 600 !important;
         }
         
-        html[data-theme="dark"] [data-testid="stMetricValue"] {
-            color: #f6f8ff !important;
-            font-size: 2rem !important;
+        html[data-theme="dark"] [data-testid="stMetricValue"],
+        html[data-theme="dark"] [data-testid="stMetricValue"] div {
+            color: #ffffff !important;
             font-weight: 750 !important;
-        }
-        
-        html[data-theme="dark"] [data-testid="stMetricDelta"] {
-            font-weight: 600 !important;
         }
 
 
