@@ -183,49 +183,82 @@ def apply_styles():
         }
 
 
+        
         /* =========================================================
-           METRIC CARDS — LIGHT
+           KPI CARDS — LIGHT MODE
            ========================================================= */
-
+        
         html[data-theme="light"] [data-testid="stMetric"] {
-            background: var(--cl-light-surface) !important;
-            border: 1px solid var(--cl-light-border) !important;
-            border-radius: 14px;
-            padding: 1rem 1.1rem;
-
-            box-shadow:
-                0 7px 22px rgba(31, 45, 68, 0.08);
+            background: linear-gradient(
+                145deg,
+                #ffffff 0%,
+                #f4f6ff 100%
+            ) !important;
+            border: 1px solid #dce2f3 !important;
+            border-radius: 16px !important;
+            padding: 1.2rem 1.25rem !important;
+            box-shadow: 0 8px 24px rgba(40, 50, 90, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-
+        
+        html[data-theme="light"] [data-testid="stMetric"]:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(40, 50, 90, 0.13);
+        }
+        
         html[data-theme="light"] [data-testid="stMetricLabel"] {
-            color: var(--cl-light-muted) !important;
+            color: #596780 !important;
+            font-size: 0.88rem !important;
+            font-weight: 600 !important;
         }
-
+        
         html[data-theme="light"] [data-testid="stMetricValue"] {
-            color: var(--cl-light-text) !important;
+            color: #202b48 !important;
+            font-size: 2rem !important;
+            font-weight: 750 !important;
         }
-
-
+        
+        html[data-theme="light"] [data-testid="stMetricDelta"] {
+            font-weight: 600 !important;
+        }
+        
+        
         /* =========================================================
-           METRIC CARDS — DARK
+           KPI CARDS — DARK MODE
            ========================================================= */
-
+        
         html[data-theme="dark"] [data-testid="stMetric"] {
-            background: var(--cl-dark-surface) !important;
-            border: 1px solid var(--cl-dark-border) !important;
-            border-radius: 14px;
-            padding: 1rem 1.1rem;
-
-            box-shadow:
-                0 10px 28px rgba(0, 0, 0, 0.25);
+            background: linear-gradient(
+                145deg,
+                #19243a 0%,
+                #121b2d 100%
+            ) !important;
+            border: 1px solid #35435f !important;
+            border-radius: 16px !important;
+            padding: 1.2rem 1.25rem !important;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-
+        
+        html[data-theme="dark"] [data-testid="stMetric"]:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 32px rgba(0, 0, 0, 0.32);
+        }
+        
         html[data-theme="dark"] [data-testid="stMetricLabel"] {
-            color: var(--cl-dark-muted) !important;
+            color: #b7c3d8 !important;
+            font-size: 0.88rem !important;
+            font-weight: 600 !important;
         }
-
+        
         html[data-theme="dark"] [data-testid="stMetricValue"] {
-            color: var(--cl-dark-text) !important;
+            color: #f6f8ff !important;
+            font-size: 2rem !important;
+            font-weight: 750 !important;
+        }
+        
+        html[data-theme="dark"] [data-testid="stMetricDelta"] {
+            font-weight: 600 !important;
         }
 
 
